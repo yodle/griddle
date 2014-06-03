@@ -1,6 +1,5 @@
 package com.yodle.gradle
 
-import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification

@@ -1,11 +1,40 @@
 package com.yodle.gradle
 
+import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 class ScroogePlugin implements Plugin<Project> {
 
+  private static final String SCROOGE_GEN_CONFIGURATION = 'scroogeGen'
+
   void apply(Project project) {
+    project.plugins.apply('scala')
+
+    project.configurations.create(SCROOGE_GEN_CONFIGURATION)
+    def thriftGenDir = "${project.getProjectDir().getPath()}/build/gen-src"
+    project.tasks.create('generateInterfaces', GenerateInterfacesTask.class, new Action<GenerateInterfacesTask>() {
+      @Override void execute(GenerateInterfacesTask t)
+      {
+        t.inputFiles = project.fileTree("${project.getProjectDir().getPath()}/src/main/thrift")
+        t.outputDirs = project.files(thriftGenDir)
+        t.setMain('com.twitter.scrooge.Main')
+      }
+    })
+
+    project.tasks.getByName('generateInterfaces').doFirst {
+      if (useFinagle)
+        args '--finagle'
+      args (['-d', outputDirs.getSingleFile(), '-l', 'scala'])
+      args inputFiles.files
+      classpath project.configurations.getByName(SCROOGE_GEN_CONFIGURATION)
+    }
+
+    project.tasks.getByName('compileJava') {
+      dependsOn 'generateInterfaces'
+    }
+
+    project.sourceSets.main.scala.srcDir thriftGenDir
 
   }
 }
