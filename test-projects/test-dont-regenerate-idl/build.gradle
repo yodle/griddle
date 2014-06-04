@@ -1,0 +1,18 @@
+apply plugin: 'scrooge'
+apply from: "${projectDir}/../common.gradle"
+
+
+def generatedInterfacesFound = false
+fileTree(generateInterfaces.outputDirs.asPath).visit{ 
+  if (it.file.path.endsWith('TestGenerateService.scala')) generatedInterfacesFound = true
+}
+if (generatedInterfacesFound) 
+  generateInterfaces.doFirst { throw new RuntimeException("generateInterfaces should not have run because they have already been generated") }
+
+def compiledClassesFound = false
+fileTree(sourceSets.main.output.classesDir).visit{ 
+  if (it.file.path.endsWith('TestGenerateService.class')) compiledClassesFound = true
+}
+if (compiledClassesFound)
+  compileScala.doFirst { throw new RuntimeException("compileScala should not have run because the generated interfaces did not change") }
+
