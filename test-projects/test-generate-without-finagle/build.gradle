@@ -1,7 +1,7 @@
 apply plugin: 'scrooge'
 apply from: "${rootDir}/test-projects/common.gradle"
 
-compileScala << {
+task testCompiledScalaDoesNotIncludeFinagle << {
   def found = false
   fileTree(sourceSets.main.output.classesDir).visit{ 
     if (it.file.name.contains('finagle')) throw new RuntimeException("Finagled interfaces should not have been generated: ${it}")
@@ -9,4 +9,5 @@ compileScala << {
 }
 
 generateInterfaces.useFinagle = false
+test.dependsOn testCompiledScalaDoesNotIncludeFinagle
 

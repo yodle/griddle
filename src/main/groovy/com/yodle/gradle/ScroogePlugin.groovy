@@ -30,6 +30,8 @@ class ScroogePlugin implements Plugin<Project> {
       classpath project.configurations.getByName(SCROOGE_GEN_CONFIGURATION)
     }
 
+    //Even if it's a scala project, it could still have mixed java and scala code, so make sure we generate
+    //interfaces before we try to compile anything
     project.tasks.getByName('compileJava') {
       dependsOn 'generateInterfaces'
     }

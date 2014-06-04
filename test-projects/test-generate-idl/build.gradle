@@ -1,7 +1,7 @@
 apply plugin: 'scrooge'
 apply from: "${projectDir}/../common.gradle"
 
-generateInterfaces << {
+task testGeneratedInterfacesFound << {
   def found = false
   fileTree(generateInterfaces.outputDirs.asPath).visit{ 
     if (it.file.path.endsWith('TestGenerateService.scala')) found = true
@@ -10,7 +10,7 @@ generateInterfaces << {
     throw new RuntimeException("generateInterfaces should have generated TestGenerateService.scala")
 }
 
-compileScala << {
+task testCompiledClassesFound << {
   def found = false
   fileTree(sourceSets.main.output.classesDir).visit{ 
     if (it.file.path.endsWith('TestGenerateService.class')) found = true
@@ -18,4 +18,7 @@ compileScala << {
   if (!found)
     throw new RuntimeException("compileScala should have compiled TestGenerateService.scala")
 }
+
+test.dependsOn testGeneratedInterfacesFound
+test.dependsOn testCompiledClassesFound
 
