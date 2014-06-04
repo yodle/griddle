@@ -1,6 +1,8 @@
 apply plugin: 'scrooge'
 apply from: "${projectDir}/../common.gradle"
 
+generateInterfaces.inputFiles = fileTree("${projectDir}/resources/idl")
+
 generateInterfaces << {
   def found = false
   fileTree(generateInterfaces.outputDirs.asPath).visit{ 

@@ -1,3 +1,4 @@
 if (hasProperty('includeTestProjects') && includeTestProjects)
 include 'test-projects:test-generate-idl',
-        'test-projects:test-generate-without-finagle'
+        'test-projects:test-generate-without-finagle',	
+	'test-projects:test-override-input-dir'
