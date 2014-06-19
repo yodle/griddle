@@ -3,6 +3,7 @@ package com.yodle.gradle
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.tasks.bundling.Jar
 
 abstract class ScroogePlugin implements Plugin<Project> {
 
@@ -31,6 +32,7 @@ abstract class ScroogePlugin implements Plugin<Project> {
 
 
       project.tasks.getByName('jar').from inputFiles
+      project.tasks.getByName('idlJar').from inputFiles
     }
 
     //Even if it's a scala project, it could still have mixed java and scala code, so make sure we generate
@@ -41,6 +43,13 @@ abstract class ScroogePlugin implements Plugin<Project> {
 
     def mainSourceSet = getMainSourceSet(project)
     mainSourceSet.srcDir thriftGenDir
+
+    project.tasks.create('idlJar', Jar.class, new Action<Jar>(){
+      @Override void execute(Jar t) {
+        t.classifier = 'idl'
+      }
+    });
+    project.tasks.getByName('assemble').dependsOn 'idlJar'
   }
 
   abstract protected getMainSourceSet(Project project);

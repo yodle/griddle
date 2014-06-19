@@ -1,0 +1,15 @@
+apply plugin: 'scrooge'
+apply from: "${projectDir}/../common.gradle"
+
+task testIdlIsInIdlJar << {
+  def jarFiles = zipTree(idlJar.archivePath)
+  def found = false
+  jarFiles.each{ 
+    if (it.path.contains('SubDir/TestGenerateIdl.thrift')) found = true
+  }
+  if (!found) throw new RuntimeException("Compiled jar should have contained the source thrift file")
+}
+
+testIdlIsInIdlJar.dependsOn idlJar
+test.dependsOn testIdlIsInIdlJar
+
