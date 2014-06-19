@@ -17,7 +17,7 @@ class ScroogeGradlePluginApplyTest extends Specification {
       project.apply plugin: 'scrooge'
 
     then:
-      project.plugins.hasPlugin(ScroogePlugin)
+      project.plugins.hasPlugin(ScroogeScalaPlugin)
   }
 
 }

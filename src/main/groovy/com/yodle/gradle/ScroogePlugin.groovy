@@ -4,12 +4,12 @@ import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
-class ScroogePlugin implements Plugin<Project> {
+abstract class ScroogePlugin implements Plugin<Project> {
 
   private static final String SCROOGE_GEN_CONFIGURATION = 'scroogeGen'
 
   void apply(Project project) {
-    project.plugins.apply('scala')
+    project.plugins.apply(getLanguage())
 
     project.configurations.create(SCROOGE_GEN_CONFIGURATION)
     def thriftGenDir = "${project.getProjectDir().getPath()}/build/gen-src"
@@ -25,7 +25,7 @@ class ScroogePlugin implements Plugin<Project> {
     project.tasks.getByName('generateInterfaces').doFirst {
       if (useFinagle)
         args '--finagle'
-      args (['-d', outputDirs.getSingleFile(), '-l', 'scala'])
+      args (['-d', outputDirs.getSingleFile(), '-l', getLanguage()])
       args inputFiles.files
       classpath project.configurations.getByName(SCROOGE_GEN_CONFIGURATION)
     }
@@ -36,7 +36,10 @@ class ScroogePlugin implements Plugin<Project> {
       dependsOn 'generateInterfaces'
     }
 
-    project.sourceSets.main.scala.srcDir thriftGenDir
+    getMainSourceSet(project).srcDir thriftGenDir
 
   }
+
+  abstract protected getMainSourceSet(Project project);
+  abstract protected String getLanguage();
 }

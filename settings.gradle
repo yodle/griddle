@@ -3,4 +3,5 @@ include 'test-projects:test-generate-idl',
         'test-projects:test-generate-without-finagle',	
 	'test-projects:test-override-input-dir',
 	'test-projects:test-override-gen-dir',
-	'test-projects:test-dont-regenerate-idl'
+	'test-projects:test-dont-regenerate-idl',
+	'test-projects:test-generate-java'
