@@ -28,6 +28,9 @@ abstract class ScroogePlugin implements Plugin<Project> {
       args (['-d', outputDirs.getSingleFile(), '-l', getLanguage()])
       args inputFiles.files
       classpath project.configurations.getByName(SCROOGE_GEN_CONFIGURATION)
+
+
+      project.tasks.getByName('jar').from inputFiles
     }
 
     //Even if it's a scala project, it could still have mixed java and scala code, so make sure we generate
@@ -36,8 +39,8 @@ abstract class ScroogePlugin implements Plugin<Project> {
       dependsOn 'generateInterfaces'
     }
 
-    getMainSourceSet(project).srcDir thriftGenDir
-
+    def mainSourceSet = getMainSourceSet(project)
+    mainSourceSet.srcDir thriftGenDir
   }
 
   abstract protected getMainSourceSet(Project project);
