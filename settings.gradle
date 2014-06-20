@@ -9,4 +9,6 @@ include 'test-projects:test-generate-idl',
 	'test-projects:test-idl-jar',
 	'test-projects:test-idl-project-dependency',
 	'test-projects:test-idl-project-dependency:dependency',
-	'test-projects:test-idl-project-dependency:dependent'
+	'test-projects:test-idl-project-dependency:dependent',
+	'test-projects:test-idl-jar-dependency'
+

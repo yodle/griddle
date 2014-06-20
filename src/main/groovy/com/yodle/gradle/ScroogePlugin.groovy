@@ -34,8 +34,8 @@ abstract class ScroogePlugin implements Plugin<Project> {
     project.tasks.getByName('generateInterfaces').dependsOn project.configurations.getByName(IDL_CONFIGURATION)
 
     project.tasks.getByName('generateInterfaces').doFirst {
-      def dependencyIdl = project.configurations.getByName(IDL_CONFIGURATION).getResolvedConfiguration().getResolvedArtifacts().collect {
-        project.zipTree(it.file).files
+      def dependencyIdl = project.configurations.getByName(IDL_CONFIGURATION).collect {
+        project.zipTree(it.path).files
       }.flatten()
       dependencyIdl.removeAll {
         !it.path.endsWith('.thrift')

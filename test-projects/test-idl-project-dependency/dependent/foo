@@ -1,7 +1,0 @@
-:test-projects:test-idl-project-dependency:dependent:generateInterfaces
-DefaultProjectDependency{dependencyProject='project ':test-projects:test-idl-project-dependency:dependency'', configuration='default'}
-:test-projects:test-idl-project-dependency:dependent:generateInterfaces FAILED
-
-BUILD FAILED
-
-Total time: 6.311 secs
