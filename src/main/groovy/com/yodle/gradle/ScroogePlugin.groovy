@@ -25,7 +25,17 @@ abstract class ScroogePlugin implements Plugin<Project> {
     project.ext.set('dependencyIdlDir', "${project.getProjectDir().getPath()}/build/idl/dependency")
     project.ext.set('includedIdlDir', "${project.getProjectDir().getPath()}/build/idl/included")
 
-    project.tasks.create('generateInterfaces', GenerateInterfacesTask.class, new Action<GenerateInterfacesTask>() {
+    def copyDependencyIdlTask = project.tasks.create('copyDependencyIdl', CopyIdlTask.class)
+    copyDependencyIdlTask.inputFiles = project.configurations.getByName(IDL_CONFIGURATION)
+    copyDependencyIdlTask.outputDirs = project.files(project.file((Object){project.dependencyIdlDir}))
+    copyDependencyIdlTask.dependsOn project.configurations.getByName(IDL_CONFIGURATION)
+
+    def copyIncludedIdlTask = project.tasks.create('copyIncludedIdl', CopyIdlTask.class)
+    copyIncludedIdlTask.inputFiles = project.configurations.getByName(COMPILED_IDL_CONFIGURATION)
+    copyIncludedIdlTask.outputDirs = project.files(project.file((Object){project.includedIdlDir}))
+    copyIncludedIdlTask.dependsOn project.configurations.getByName(COMPILED_IDL_CONFIGURATION)
+
+    def generateInterfacesTask = project.tasks.create('generateInterfaces', GenerateInterfacesTask.class, new Action<GenerateInterfacesTask>() {
       @Override void execute(GenerateInterfacesTask t)
       {
         t.inputFiles = project.files(
@@ -38,33 +48,10 @@ abstract class ScroogePlugin implements Plugin<Project> {
       }
     })
 
-    project.tasks.getByName('generateInterfaces').dependsOn project.configurations.getByName(IDL_CONFIGURATION)
+    generateInterfacesTask.dependsOn copyDependencyIdlTask
+    generateInterfacesTask.dependsOn copyIncludedIdlTask
 
     project.tasks.getByName('generateInterfaces').doFirst {
-      def dependencyIdl = project.configurations.getByName(IDL_CONFIGURATION).collect {
-        project.zipTree(it.path).files
-      }.flatten()
-      dependencyIdl.removeAll {
-        !it.path.endsWith('.thrift')
-      }
-
-      project.copy {
-        from dependencyIdl
-        into {project.dependencyIdlDir}
-      }
-
-      def includedIdl = project.configurations.getByName(COMPILED_IDL_CONFIGURATION).collect {
-        project.zipTree(it.path).files
-      }.flatten()
-      includedIdl.removeAll {
-        !it.path.endsWith('.thrift')
-      }
-
-      project.copy {
-        from includedIdl
-        into {project.includedIdlDir}
-      }
-
       if (useFinagle)
         args '--finagle'
       args (['-d', outputDirs.getSingleFile(), '-l', getLanguage()])
