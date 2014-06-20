@@ -10,7 +10,7 @@ import org.gradle.api.tasks.OutputDirectories
 
 class GenerateInterfacesTask extends JavaExec
 {
-  @InputFiles FileTree inputFiles
+  @InputFiles FileCollection inputFiles
   @OutputDirectories FileCollection outputDirs
   boolean useFinagle = true
 }

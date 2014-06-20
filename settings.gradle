@@ -6,4 +6,7 @@ include 'test-projects:test-generate-idl',
 	'test-projects:test-dont-regenerate-idl',
 	'test-projects:test-generate-java',
 	'test-projects:test-jar-includes-idl',
-	'test-projects:test-idl-jar'
+	'test-projects:test-idl-jar',
+	'test-projects:test-idl-project-dependency',
+	'test-projects:test-idl-project-dependency:dependency',
+	'test-projects:test-idl-project-dependency:dependent'
