@@ -1,7 +1,7 @@
 apply plugin: 'scrooge'
 apply from: "${projectDir}/../common.gradle"
 
-generateInterfaces.inputFiles = fileTree("${projectDir}/resources/idl")
+project.thriftSrcDir = "${projectDir}/resources/idl"
 
 task testGeneratedInterfacesFound << {
   def found = false

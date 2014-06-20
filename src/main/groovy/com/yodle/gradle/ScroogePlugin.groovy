@@ -11,13 +11,14 @@ abstract class ScroogePlugin implements Plugin<Project> {
 
   void apply(Project project) {
     project.plugins.apply(getLanguage())
-
     project.configurations.create(SCROOGE_GEN_CONFIGURATION)
+
+    project.ext.set('thriftSrcDir',"${project.getProjectDir().getPath()}/src/main/thrift")
     def thriftGenDir = "${project.getProjectDir().getPath()}/build/gen-src"
     project.tasks.create('generateInterfaces', GenerateInterfacesTask.class, new Action<GenerateInterfacesTask>() {
       @Override void execute(GenerateInterfacesTask t)
       {
-        t.inputFiles = project.fileTree("${project.getProjectDir().getPath()}/src/main/thrift")
+        t.inputFiles = project.fileTree((Object){project.thriftSrcDir})
         t.outputDirs = project.files(thriftGenDir)
         t.setMain('com.twitter.scrooge.Main')
       }
@@ -29,10 +30,6 @@ abstract class ScroogePlugin implements Plugin<Project> {
       args (['-d', outputDirs.getSingleFile(), '-l', getLanguage()])
       args inputFiles.files
       classpath project.configurations.getByName(SCROOGE_GEN_CONFIGURATION)
-
-
-      project.tasks.getByName('jar').from inputFiles
-      project.tasks.getByName('idlJar').from inputFiles
     }
 
     //Even if it's a scala project, it could still have mixed java and scala code, so make sure we generate
@@ -50,6 +47,9 @@ abstract class ScroogePlugin implements Plugin<Project> {
       }
     });
     project.tasks.getByName('assemble').dependsOn 'idlJar'
+
+    project.tasks.getByName('jar').from {project.thriftSrcDir}
+    project.tasks.getByName('idlJar').from {project.thriftSrcDir}
   }
 
   abstract protected getMainSourceSet(Project project);
