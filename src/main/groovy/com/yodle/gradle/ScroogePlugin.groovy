@@ -10,15 +10,21 @@ abstract class ScroogePlugin implements Plugin<Project> {
 
   private static final String SCROOGE_GEN_CONFIGURATION = 'scroogeGen'
   private static final String IDL_CONFIGURATION = 'idl'
+  private static final String COMPILED_IDL_CONFIGURATION = 'compiledIdl'
 
   void apply(Project project) {
     project.plugins.apply(getLanguage())
     project.configurations.create(SCROOGE_GEN_CONFIGURATION)
     project.configurations.create(IDL_CONFIGURATION)
+    project.configurations.create(COMPILED_IDL_CONFIGURATION)
+    project.configurations.getByName('compile').extendsFrom project.configurations.getByName(COMPILED_IDL_CONFIGURATION)
+
 
     project.ext.set('thriftSrcDir',"${project.getProjectDir().getPath()}/src/main/thrift")
     project.ext.set('thriftGenDir', "${project.getProjectDir().getPath()}/build/gen-src")
     project.ext.set('dependencyIdlDir', "${project.getProjectDir().getPath()}/build/idl/dependency")
+    project.ext.set('includedIdlDir', "${project.getProjectDir().getPath()}/build/idl/included")
+
     project.tasks.create('generateInterfaces', GenerateInterfacesTask.class, new Action<GenerateInterfacesTask>() {
       @Override void execute(GenerateInterfacesTask t)
       {
@@ -26,6 +32,7 @@ abstract class ScroogePlugin implements Plugin<Project> {
                 project.fileTree((Object){project.thriftSrcDir}),
                 project.fileTree((Object){project.dependencyIdlDir})
         );
+        t.includedFiles = project.fileTree((Object){project.includedIdlDir})
         t.outputDirs = project.files((Object){project.thriftGenDir})
         t.setMain('com.twitter.scrooge.Main')
       }
@@ -46,10 +53,23 @@ abstract class ScroogePlugin implements Plugin<Project> {
         into {project.dependencyIdlDir}
       }
 
+      def includedIdl = project.configurations.getByName(COMPILED_IDL_CONFIGURATION).collect {
+        project.zipTree(it.path).files
+      }.flatten()
+      includedIdl.removeAll {
+        !it.path.endsWith('.thrift')
+      }
+
+      project.copy {
+        from includedIdl
+        into {project.includedIdlDir}
+      }
+
       if (useFinagle)
         args '--finagle'
       args (['-d', outputDirs.getSingleFile(), '-l', getLanguage()])
       args (['-i', project.fileTree((Object){project.dependencyIdlDir}).getDir()])
+      args (['-i', includedFiles.dir])
       args inputFiles.files
 
       classpath project.configurations.getByName(SCROOGE_GEN_CONFIGURATION)
