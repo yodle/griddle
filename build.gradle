@@ -4,7 +4,7 @@ sourceCompatibility = 1.6
 version = '1.0'
 
 repositories {
-  maven { url 'http://artifactory.corp.yodle.com:8081/artifactory/simple/gradle-plugin-repos/' }
+  mavenCentral()
 }
 
 dependencies {
