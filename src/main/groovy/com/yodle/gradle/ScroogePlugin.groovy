@@ -14,12 +14,12 @@ abstract class ScroogePlugin implements Plugin<Project> {
     project.configurations.create(SCROOGE_GEN_CONFIGURATION)
 
     project.ext.set('thriftSrcDir',"${project.getProjectDir().getPath()}/src/main/thrift")
-    def thriftGenDir = "${project.getProjectDir().getPath()}/build/gen-src"
+    project.ext.set('thriftGenDir', "${project.getProjectDir().getPath()}/build/gen-src")
     project.tasks.create('generateInterfaces', GenerateInterfacesTask.class, new Action<GenerateInterfacesTask>() {
       @Override void execute(GenerateInterfacesTask t)
       {
         t.inputFiles = project.fileTree((Object){project.thriftSrcDir})
-        t.outputDirs = project.files(thriftGenDir)
+        t.outputDirs = project.files((Object){project.thriftGenDir})
         t.setMain('com.twitter.scrooge.Main')
       }
     })
@@ -39,7 +39,7 @@ abstract class ScroogePlugin implements Plugin<Project> {
     }
 
     def mainSourceSet = getMainSourceSet(project)
-    mainSourceSet.srcDir thriftGenDir
+    mainSourceSet.srcDir {project.thriftGenDir}
 
     project.tasks.create('idlJar', Jar.class, new Action<Jar>(){
       @Override void execute(Jar t) {

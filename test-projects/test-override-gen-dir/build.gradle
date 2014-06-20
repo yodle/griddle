@@ -2,8 +2,7 @@ apply plugin: 'scrooge'
 apply from: "${projectDir}/../common.gradle"
 
 def overrideOutputDir = "${buildDir}/gen-src-override"
-generateInterfaces.outputDirs = files(overrideOutputDir)
-sourceSets.main.scala.srcDir overrideOutputDir
+project.thriftGenDir = overrideOutputDir
 
 task testGeneratedInterfacesFound << {
   def found = false
