@@ -1,0 +1,4 @@
+  repositories {
+    mavenCentral()
+    maven { url 'http://maven.twttr.com' }
+  }

@@ -1,0 +1,29 @@
+apply plugin: 'thrift'
+apply from: "${rootDir}/test-projects/repos.gradle"
+
+dependencies {
+  compile "org.apache.thrift:libthrift:0.5.0"
+}
+
+
+task testGeneratedInterfacesFound << {
+  def found = false
+  fileTree(generateInterfaces.outputDirs.asPath).visit{ 
+    if (it.file.path.endsWith('TestGenerateService.java')) found = true
+  }
+  if (!found)
+    throw new RuntimeException("generateInterfaces should have generated TestGenerateService.java")
+}
+
+task testCompiledClassesFound << {
+  def found = false
+  fileTree(sourceSets.main.output.classesDir).visit{ 
+    if (it.file.path.endsWith('TestGenerateService.class')) found = true
+  }
+  if (!found)
+    throw new RuntimeException("compileJava should have compiled TestGenerateService.java")
+}
+
+test.dependsOn testGeneratedInterfacesFound
+test.dependsOn testCompiledClassesFound
+

@@ -1,7 +1,4 @@
-  repositories {
-    mavenCentral()
-    maven { url 'http://maven.twttr.com' }
-  }
+  apply from: "${rootDir}/test-projects/repos.gradle"
 
   dependencies {
     scroogeGen "com.twitter:scrooge-generator_2.10:3.13.2"

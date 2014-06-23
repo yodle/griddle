@@ -9,34 +9,24 @@ import org.gradle.api.tasks.bundling.Jar
 
 abstract class ScroogePlugin extends GeneratingPlugin {
 
-  private static final String SCROOGE_GEN_CONFIGURATION = 'scroogeGen'
+  public static final String SCROOGE_GEN_CONFIGURATION = 'scroogeGen'
   private static final String GENERATE_INTERFACES_TASK_NAME = 'generateInterfaces'
 
   @Override protected Task createGenerateInterfacesTask(Project project)
   {
-    def generateInterfacesTask = project.tasks.create(GENERATE_INTERFACES_TASK_NAME, GenerateInterfacesTask.class, new Action<GenerateInterfacesTask>() {
-      @Override void execute(GenerateInterfacesTask t)
+    def generateInterfacesTask = project.tasks.create(GENERATE_INTERFACES_TASK_NAME, GenerateInterfacesScroogeTask.class, new Action<GenerateInterfacesScroogeTask>() {
+      @Override void execute(GenerateInterfacesScroogeTask t)
       {
-        t.inputFiles = project.files(
-                project.fileTree((Object){project.thriftSrcDir}),
-                project.fileTree((Object){project.dependencyIdlDir})
-        );
+        t.inputFiles = project.fileTree((Object){project.thriftSrcDir})
+        t.dependencyFiles = project.fileTree((Object){project.dependencyIdlDir})
         t.includedFiles = project.fileTree((Object){project.includedIdlDir})
         t.outputDirs = project.files((Object){project.thriftGenDir})
+        t.setLanguage(getLanguage())
         t.setMain('com.twitter.scrooge.Main')
       }
     })
 
-    generateInterfacesTask.doFirst {
-      if (useFinagle)
-        args '--finagle'
-      args (['-d', outputDirs.getSingleFile(), '-l', getLanguage()])
-      args (['-i', project.fileTree((Object){project.dependencyIdlDir}).getDir()])
-      args (['-i', includedFiles.dir])
-      args inputFiles.files
-
-      classpath project.configurations.getByName(SCROOGE_GEN_CONFIGURATION)
-    }
+    generateInterfacesTask.configure()
 
     return generateInterfacesTask
   }
