@@ -19,5 +19,6 @@ include 'test-projects:test-generate-idl',
 	'test-projects:test-transitive-idl-project-dependency:dependency1',
 	'test-projects:test-transitive-idl-project-dependency:dependency2',
 	'test-projects:test-transitive-idl-project-dependency:dependent',
-	'test-projects:test-generate-java-thrift'
+	'test-projects:test-generate-java-thrift',
+	'test-projects:test-generate-python-thrift'
 

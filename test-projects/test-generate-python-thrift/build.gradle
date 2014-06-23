@@ -1,0 +1,31 @@
+apply plugin: 'thrift'
+apply from: "${rootDir}/test-projects/repos.gradle"
+
+dependencies {
+  compile "org.apache.thrift:libthrift:0.5.0"
+}
+
+generateInterfaces.language = 'py:new-style'
+
+
+task testGeneratedInterfacesFound << {
+  def found = false
+  fileTree(generateInterfaces.outputDirs.asPath).visit{ 
+    if (it.file.path.endsWith('TestGenerateService.py')) found = true
+  }
+  if (!found)
+    throw new RuntimeException("generateInterfaces should have generated TestGenerateService.py")
+}
+
+task testGeneratedInterfaces2Found << {
+  def found = false
+  fileTree(generateInterfaces.outputDirs.asPath).visit{ 
+    if (it.file.path.endsWith('TestGenerateService2.py')) found = true
+  }
+  if (!found)
+    throw new RuntimeException("generateInterfaces should have generated TestGenerateService2.py")
+}
+
+test.dependsOn testGeneratedInterfacesFound
+test.dependsOn testGeneratedInterfaces2Found
+
