@@ -3,20 +3,17 @@ package com.yodle.gradle
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.internal.artifacts.dependencies.DefaultProjectDependency
 import org.gradle.api.tasks.bundling.Jar
 
-abstract class ScroogePlugin implements Plugin<Project> {
+abstract class ScroogePlugin extends GeneratingPlugin {
 
   private static final String SCROOGE_GEN_CONFIGURATION = 'scroogeGen'
   private static final String GENERATE_INTERFACES_TASK_NAME = 'generateInterfaces'
 
-  void apply(Project project) {
-    project.plugins.apply(getLanguage())
-    project.plugins.apply('idl')
-    project.configurations.create(SCROOGE_GEN_CONFIGURATION)
-    project.configurations.getByName('compile').extendsFrom project.configurations.getByName(IdlPlugin.COMPILED_IDL_CONFIGURATION)
-
+  @Override protected Task createGenerateInterfacesTask(Project project)
+  {
     def generateInterfacesTask = project.tasks.create(GENERATE_INTERFACES_TASK_NAME, GenerateInterfacesTask.class, new Action<GenerateInterfacesTask>() {
       @Override void execute(GenerateInterfacesTask t)
       {
@@ -30,10 +27,7 @@ abstract class ScroogePlugin implements Plugin<Project> {
       }
     })
 
-    generateInterfacesTask.dependsOn project.tasks.getByName(IdlPlugin.COPY_DEPENDENCY_IDL_TASK_NAME)
-    generateInterfacesTask.dependsOn project.tasks.getByName(IdlPlugin.COPY_INCLUDED_IDL_TASK_NAME)
-
-    project.tasks.getByName('generateInterfaces').doFirst {
+    generateInterfacesTask.doFirst {
       if (useFinagle)
         args '--finagle'
       args (['-d', outputDirs.getSingleFile(), '-l', getLanguage()])
@@ -44,18 +38,14 @@ abstract class ScroogePlugin implements Plugin<Project> {
       classpath project.configurations.getByName(SCROOGE_GEN_CONFIGURATION)
     }
 
-    //Even if it's a scala project, it could still have mixed java and scala code, so make sure we generate
-    //interfaces before we try to compile anything
-    project.tasks.getByName('compileJava') {
-      dependsOn 'generateInterfaces'
-    }
-
-    def mainSourceSet = getMainSourceSet(project)
-    mainSourceSet.srcDir {project.thriftGenDir}
-
-    project.tasks.getByName('jar').from {project.thriftSrcDir}
+    return generateInterfacesTask
   }
 
-  abstract protected getMainSourceSet(Project project);
+  void apply(Project project) {
+    project.plugins.apply(getLanguage())
+    project.configurations.create(SCROOGE_GEN_CONFIGURATION)
+    super.apply(project)
+  }
+
   abstract protected String getLanguage();
 }
