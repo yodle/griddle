@@ -24,6 +24,26 @@ task testCompiledClassesFound << {
     throw new RuntimeException("compileJava should have compiled TestGenerateService.java")
 }
 
+task testGeneratedInterfaces2Found << {
+  def found = false
+  fileTree(generateInterfaces.outputDirs.asPath).visit{ 
+    if (it.file.path.endsWith('TestGenerateService2.java')) found = true
+  }
+  if (!found)
+    throw new RuntimeException("generateInterfaces should have generated TestGenerateService2.java")
+}
+
+task testCompiledClasses2Found << {
+  def found = false
+  fileTree(sourceSets.main.output.classesDir).visit{ 
+    if (it.file.path.endsWith('TestGenerateService2.class')) found = true
+  }
+  if (!found)
+    throw new RuntimeException("compileJava should have compiled TestGenerateService2.java")
+}
+
 test.dependsOn testGeneratedInterfacesFound
 test.dependsOn testCompiledClassesFound
+test.dependsOn testGeneratedInterfaces2Found
+test.dependsOn testCompiledClasses2Found
 
