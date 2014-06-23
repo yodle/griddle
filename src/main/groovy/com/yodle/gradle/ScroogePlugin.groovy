@@ -9,33 +9,15 @@ import org.gradle.api.tasks.bundling.Jar
 abstract class ScroogePlugin implements Plugin<Project> {
 
   private static final String SCROOGE_GEN_CONFIGURATION = 'scroogeGen'
-  private static final String IDL_CONFIGURATION = 'idl'
-  private static final String COMPILED_IDL_CONFIGURATION = 'compiledIdl'
+  private static final String GENERATE_INTERFACES_TASK_NAME = 'generateInterfaces'
 
   void apply(Project project) {
     project.plugins.apply(getLanguage())
+    project.plugins.apply('idl')
     project.configurations.create(SCROOGE_GEN_CONFIGURATION)
-    project.configurations.create(IDL_CONFIGURATION)
-    project.configurations.create(COMPILED_IDL_CONFIGURATION)
-    project.configurations.getByName('compile').extendsFrom project.configurations.getByName(COMPILED_IDL_CONFIGURATION)
+    project.configurations.getByName('compile').extendsFrom project.configurations.getByName(IdlPlugin.COMPILED_IDL_CONFIGURATION)
 
-
-    project.ext.set('thriftSrcDir',"${project.getProjectDir().getPath()}/src/main/thrift")
-    project.ext.set('thriftGenDir', "${project.getProjectDir().getPath()}/build/gen-src")
-    project.ext.set('dependencyIdlDir', "${project.getProjectDir().getPath()}/build/idl/dependency")
-    project.ext.set('includedIdlDir', "${project.getProjectDir().getPath()}/build/idl/included")
-
-    def copyDependencyIdlTask = project.tasks.create('copyDependencyIdl', CopyIdlTask.class)
-    copyDependencyIdlTask.inputFiles = project.configurations.getByName(IDL_CONFIGURATION)
-    copyDependencyIdlTask.outputDirs = project.files(project.file((Object){project.dependencyIdlDir}))
-    copyDependencyIdlTask.dependsOn project.configurations.getByName(IDL_CONFIGURATION)
-
-    def copyIncludedIdlTask = project.tasks.create('copyIncludedIdl', CopyIdlTask.class)
-    copyIncludedIdlTask.inputFiles = project.configurations.getByName(COMPILED_IDL_CONFIGURATION)
-    copyIncludedIdlTask.outputDirs = project.files(project.file((Object){project.includedIdlDir}))
-    copyIncludedIdlTask.dependsOn project.configurations.getByName(COMPILED_IDL_CONFIGURATION)
-
-    def generateInterfacesTask = project.tasks.create('generateInterfaces', GenerateInterfacesTask.class, new Action<GenerateInterfacesTask>() {
+    def generateInterfacesTask = project.tasks.create(GENERATE_INTERFACES_TASK_NAME, GenerateInterfacesTask.class, new Action<GenerateInterfacesTask>() {
       @Override void execute(GenerateInterfacesTask t)
       {
         t.inputFiles = project.files(
@@ -48,8 +30,8 @@ abstract class ScroogePlugin implements Plugin<Project> {
       }
     })
 
-    generateInterfacesTask.dependsOn copyDependencyIdlTask
-    generateInterfacesTask.dependsOn copyIncludedIdlTask
+    generateInterfacesTask.dependsOn project.tasks.getByName(IdlPlugin.COPY_DEPENDENCY_IDL_TASK_NAME)
+    generateInterfacesTask.dependsOn project.tasks.getByName(IdlPlugin.COPY_INCLUDED_IDL_TASK_NAME)
 
     project.tasks.getByName('generateInterfaces').doFirst {
       if (useFinagle)
@@ -71,17 +53,7 @@ abstract class ScroogePlugin implements Plugin<Project> {
     def mainSourceSet = getMainSourceSet(project)
     mainSourceSet.srcDir {project.thriftGenDir}
 
-    project.tasks.create('idlJar', Jar.class, new Action<Jar>(){
-      @Override void execute(Jar t) {
-        t.classifier = 'idl'
-      }
-    });
-    project.tasks.getByName('assemble').dependsOn 'idlJar'
-
     project.tasks.getByName('jar').from {project.thriftSrcDir}
-    project.tasks.getByName('idlJar').from {project.thriftSrcDir}
-
-    project.artifacts.add(IDL_CONFIGURATION, project.tasks.getByName('idlJar'))
   }
 
   abstract protected getMainSourceSet(Project project);
