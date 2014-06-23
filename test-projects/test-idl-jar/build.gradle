@@ -1,5 +1,5 @@
-apply plugin: 'scrooge'
-apply from: "${projectDir}/../common.gradle"
+apply plugin: 'idl'
+apply plugin: 'java'
 
 task testIdlIsInIdlJar << {
   def jarFiles = zipTree(idlJar.archivePath)

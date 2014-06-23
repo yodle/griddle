@@ -35,7 +35,6 @@ class IdlPlugin implements Plugin<Project> {
         t.classifier = 'idl'
       }
     });
-    project.tasks.getByName('assemble').dependsOn 'idlJar'
     project.tasks.getByName('idlJar').from {project.thriftSrcDir}
 
     project.artifacts.add(IDL_CONFIGURATION, project.tasks.getByName('idlJar'))
