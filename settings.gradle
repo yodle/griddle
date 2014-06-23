@@ -14,5 +14,9 @@ include 'test-projects:test-generate-idl',
 	'test-projects:test-compiled-idl-project-dependency',
 	'test-projects:test-compiled-idl-project-dependency:dependency',
 	'test-projects:test-compiled-idl-project-dependency:dependent',
-	'test-projects:test-compiled-idl-jar-dependency'
+	'test-projects:test-compiled-idl-jar-dependency',
+	'test-projects:test-transitive-idl-project-dependency',
+	'test-projects:test-transitive-idl-project-dependency:dependency1',
+	'test-projects:test-transitive-idl-project-dependency:dependency2',
+	'test-projects:test-transitive-idl-project-dependency:dependent'
 

@@ -54,8 +54,6 @@ abstract class ScroogePlugin implements Plugin<Project> {
     mainSourceSet.srcDir {project.thriftGenDir}
 
     project.tasks.getByName('jar').from {project.thriftSrcDir}
-
-    project.tasks.getByName('assemble').dependsOn 'idlJar'
   }
 
   abstract protected getMainSourceSet(Project project);

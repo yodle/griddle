@@ -12,6 +12,8 @@ class IdlPlugin implements Plugin<Project> {
   public static final String COPY_INCLUDED_IDL_TASK_NAME = 'copyIncludedIdl'
 
   @Override void apply(Project project) {
+    project.plugins.apply('java')
+
     project.configurations.create(IDL_CONFIGURATION)
     project.configurations.create(COMPILED_IDL_CONFIGURATION)
 
@@ -38,5 +40,7 @@ class IdlPlugin implements Plugin<Project> {
     project.tasks.getByName('idlJar').from {project.thriftSrcDir}
 
     project.artifacts.add(IDL_CONFIGURATION, project.tasks.getByName('idlJar'))
+
+    project.tasks.getByName('assemble').dependsOn 'idlJar'
   }
 }

@@ -1,0 +1,8 @@
+apply plugin: 'idl'
+
+dependencies {
+  idl project(path: ':test-projects:test-transitive-idl-project-dependency:dependency1', configuration: 'idl')
+}
+
+
+
