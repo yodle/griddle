@@ -11,7 +11,7 @@ class GenerateInterfacesScroogeTask extends JavaExec {
   @InputFiles FileCollection dependencyFiles
   @OutputDirectories FileCollection outputDirs
   String language
-  boolean useFinagle;
+  boolean useFinagle = true;
 
   public configure() {
     doFirst {
