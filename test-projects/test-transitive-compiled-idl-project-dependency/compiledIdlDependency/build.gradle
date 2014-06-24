@@ -1,0 +1,9 @@
+apply plugin: 'scrooge'
+apply from: "${rootDir}/test-projects/common.gradle"
+
+dependencies {
+  idl project(path: ':test-projects:test-transitive-compiled-idl-project-dependency:idlDependency', configuration: 'idl')
+}
+
+
+

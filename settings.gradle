@@ -20,5 +20,10 @@ include 'test-projects:test-generate-idl',
 	'test-projects:test-transitive-idl-project-dependency:dependency2',
 	'test-projects:test-transitive-idl-project-dependency:dependent',
 	'test-projects:test-generate-java-thrift',
-	'test-projects:test-generate-python-thrift'
+	'test-projects:test-generate-python-thrift',
+	'test-projects:test-transitive-compiled-idl-project-dependency',
+	'test-projects:test-transitive-compiled-idl-project-dependency:idlDependency',
+	'test-projects:test-transitive-compiled-idl-project-dependency:idlDependent',
+	'test-projects:test-transitive-compiled-idl-project-dependency:compiledIdlDependency',
+	'test-projects:test-transitive-compiled-idl-project-dependency:compiledIdlDependent'
 

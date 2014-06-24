@@ -10,6 +10,7 @@ abstract class GeneratingPlugin implements Plugin<Project> {
   void apply(Project project) {
     project.plugins.apply('idl')
     project.configurations.getByName('compile').extendsFrom project.configurations.getByName(IdlPlugin.COMPILED_IDL_CONFIGURATION)
+    project.configurations.getByName('compile').extendsFrom project.configurations.getByName(IdlPlugin.IDL_CONFIGURATION)
 
     def generateInterfacesTask = createGenerateInterfacesTask(project)
     generateInterfacesTask.dependsOn project.tasks.getByName(IdlPlugin.COPY_DEPENDENCY_IDL_TASK_NAME)

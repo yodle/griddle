@@ -1,0 +1,50 @@
+apply plugin: 'scrooge'
+apply from: "${projectDir}/../../common.gradle"
+
+dependencies {
+  idl project(path: ':test-projects:test-transitive-compiled-idl-project-dependency:idlDependent', configuration: 'idl')
+  compiledIdl project(':test-projects:test-transitive-compiled-idl-project-dependency:compiledIdlDependency')
+}
+
+task testDependencyGeneratedInterfacesNotFound << {
+  def found = false
+  fileTree(generateInterfaces.outputDirs.asPath).visit{ 
+    if (it.file.path.endsWith('TestGenerateService1.scala')) found = true
+  }
+  if (found)
+    throw new RuntimeException("generateInterfaces should not have generated TestGenerateService1.scala")
+}
+
+task testDependentGeneratedInterfacesFound << {
+  def found = false
+  fileTree(generateInterfaces.outputDirs.asPath).visit{ 
+    if (it.file.path.endsWith('TestGenerateDependentService.scala')) found = true
+  }
+  if (!found)
+    throw new RuntimeException("generateInterfaces should have generated TestGenerateDependentService.scala")
+}
+
+task testCompiledDependencyClassesNotFound << {
+  def found = false
+  fileTree(sourceSets.main.output.classesDir).visit{ 
+    if (it.file.path.endsWith('TestGenerateService1.class')) found = true
+  }
+  if (found)
+    throw new RuntimeException("compileScala should not have compiled TestGenerateService1.scala")
+}
+
+task testCompiledDependentClassesFound << {
+  def found = false
+  fileTree(sourceSets.main.output.classesDir).visit{ 
+    if (it.file.path.endsWith('TestGenerateDependentService.class')) found = true
+  }
+  if (!found)
+    throw new RuntimeException("compileScala should have compiled TestGenerateDependentService.scala")
+}
+
+test.dependsOn testCompiledDependentClassesFound
+test.dependsOn testCompiledDependencyClassesNotFound
+test.dependsOn testDependentGeneratedInterfacesFound
+test.dependsOn testDependencyGeneratedInterfacesNotFound
+
+
