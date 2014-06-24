@@ -17,6 +17,9 @@ class IdlPlugin implements Plugin<Project> {
     project.configurations.create(IDL_CONFIGURATION)
     project.configurations.create(COMPILED_IDL_CONFIGURATION)
 
+    project.configurations.getByName('compile').extendsFrom project.configurations.getByName(COMPILED_IDL_CONFIGURATION)
+    project.configurations.getByName('default').extendsFrom project.configurations.getByName(IDL_CONFIGURATION)
+
     project.ext.set('thriftSrcDir',"${project.getProjectDir().getPath()}/src/main/thrift")
     project.ext.set('thriftGenDir', "${project.getProjectDir().getPath()}/build/gen-src")
     project.ext.set('dependencyIdlDir', "${project.getProjectDir().getPath()}/build/idl/dependency")
@@ -38,6 +41,7 @@ class IdlPlugin implements Plugin<Project> {
       }
     });
     project.tasks.getByName('idlJar').from {project.thriftSrcDir}
+    project.tasks.getByName('jar').from {project.thriftSrcDir}
 
     project.artifacts.add(IDL_CONFIGURATION, project.tasks.getByName('idlJar'))
 

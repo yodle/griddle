@@ -2,7 +2,7 @@ apply plugin: 'scrooge'
 apply from: "${projectDir}/../../common.gradle"
 
 dependencies {
-  idl project(path: ':test-projects:test-transitive-compiled-idl-project-dependency:idlDependent', configuration: 'idl')
+  idl project(':test-projects:test-transitive-compiled-idl-project-dependency:idlDependent')
   compiledIdl project(':test-projects:test-transitive-compiled-idl-project-dependency:compiledIdlDependency')
 }
 

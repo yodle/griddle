@@ -9,13 +9,10 @@ abstract class GeneratingPlugin implements Plugin<Project> {
   @Override
   void apply(Project project) {
     project.plugins.apply('idl')
-    project.configurations.getByName('compile').extendsFrom project.configurations.getByName(IdlPlugin.COMPILED_IDL_CONFIGURATION)
-    project.configurations.getByName('compile').extendsFrom project.configurations.getByName(IdlPlugin.IDL_CONFIGURATION)
 
     def generateInterfacesTask = createGenerateInterfacesTask(project)
     generateInterfacesTask.dependsOn project.tasks.getByName(IdlPlugin.COPY_DEPENDENCY_IDL_TASK_NAME)
     generateInterfacesTask.dependsOn project.tasks.getByName(IdlPlugin.COPY_INCLUDED_IDL_TASK_NAME)
-
 
     //Even if it's a scala project, it could still have mixed java and scala code, so make sure we generate
     //interfaces before we try to compile anything
@@ -25,8 +22,6 @@ abstract class GeneratingPlugin implements Plugin<Project> {
 
     def mainSourceSet = getMainSourceSet(project)
     mainSourceSet.srcDir {project.thriftGenDir}
-
-    project.tasks.getByName('jar').from {project.thriftSrcDir}
   }
 
   abstract protected getMainSourceSet(Project project);

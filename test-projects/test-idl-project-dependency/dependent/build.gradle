@@ -2,7 +2,7 @@ apply plugin: 'scrooge'
 apply from: "${projectDir}/../../common.gradle"
 
 dependencies {
-  idl project(path: ':test-projects:test-idl-project-dependency:dependency', configuration: 'idl')
+  idl project(':test-projects:test-idl-project-dependency:dependency')
 }
 
 task testDependencyGeneratedInterfacesFound << {
