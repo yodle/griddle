@@ -13,15 +13,11 @@ class CopyIdlTask extends DefaultTask
   CopyIdlTask() {
 
     doFirst {
-      def idl = inputFiles.collect {
-        project.zipTree(it.path).files
-      }.flatten()
-      idl.removeAll {
-        !it.path.endsWith('.thrift')
-      }
-
       project.copy {
-        from idl
+        inputFiles.each {
+          from project.zipTree(it.path)
+          include "**/*.thrift"
+        }
         into outputDirs.singleFile
       }
     }
