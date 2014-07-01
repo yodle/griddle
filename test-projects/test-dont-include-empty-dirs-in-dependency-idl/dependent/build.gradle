@@ -1,0 +1,24 @@
+apply plugin: 'scrooge'
+apply from: "${projectDir}/../../common.gradle"
+
+dependencies {
+  compiledIdl project(':test-projects:test-compiled-idl-project-dependency:dependency')
+}
+
+task testExtractedDirectoryDoesNotContainEmptyDirectories << {
+  def found = false
+  fileTree(includedIdlDir).visit{ 
+    if (!it.file.path.endsWith('.thrift')) {
+      found = true
+      println it.file.path
+    }
+  }
+  if (found)
+    throw new RuntimeException("copyIncludedIdl should not have included empty directories")
+}
+
+test.dependsOn testExtractedDirectoryDoesNotContainEmptyDirectories
+
+
+
+

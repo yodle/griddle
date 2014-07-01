@@ -19,6 +19,7 @@ class CopyIdlTask extends DefaultTask
           include "**/*.thrift"
         }
         into outputDirs.singleFile
+        includeEmptyDirs false
       }
     }
   }
