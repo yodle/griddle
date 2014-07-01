@@ -13,7 +13,9 @@ class ThriftPlugin extends GeneratingPlugin {
     def generateInterfacesTask = project.tasks.create(GENERATE_INTERFACES_TASK_NAME, GenerateInterfacesThriftTask.class, new Action<GenerateInterfacesThriftTask>() {
       @Override void execute(GenerateInterfacesThriftTask t)
       {
-        t.inputFiles = project.fileTree((Object){project.thriftSrcDir})
+        t.inputFiles = project.fileTree((Object){project.thriftSrcDir}).matching {
+          include '**/*.thrift'
+        }
         t.dependencyFiles = project.fileTree((Object){project.dependencyIdlDir})
         t.includedFiles = project.fileTree((Object){project.includedIdlDir})
         t.outputDirs = project.files((Object){project.thriftGenDir})

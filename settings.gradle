@@ -25,5 +25,7 @@ include 'test-projects:test-generate-idl',
 	'test-projects:test-transitive-compiled-idl-project-dependency:idlDependency',
 	'test-projects:test-transitive-compiled-idl-project-dependency:idlDependent',
 	'test-projects:test-transitive-compiled-idl-project-dependency:compiledIdlDependency',
-	'test-projects:test-transitive-compiled-idl-project-dependency:compiledIdlDependent'
+	'test-projects:test-transitive-compiled-idl-project-dependency:compiledIdlDependent',
+	'test-projects:test-ignore-non-thrift-files',
+	'test-projects:test-thrift-generator-ignores-non-thrift-files'
 
