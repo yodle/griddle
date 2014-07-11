@@ -1,0 +1,9 @@
+apply plugin: 'thrift'
+apply from: "${rootDir}/thrift-common.gradle"
+
+dependencies {
+    compile project(':incremental-generation-with-heterogeneous-generators:idl-base:thrift')
+
+    idl (project.getParent()) { transitive=false } //We exclude transitive dependencies here because we only want to generate the idl that is native to idl-dependent
+    compiledIdl (project.getParent()) //But we need a compiledIdl dependency on our parent's transitive deps because those dependencies are included by our parent's thrift files
+}
