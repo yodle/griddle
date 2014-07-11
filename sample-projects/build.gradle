@@ -1,0 +1,12 @@
+subprojects {
+  buildscript {
+    dependencies {
+      classpath files("${rootDir}/../releases/griddle-1.0.jar")
+    }
+  }
+
+  repositories {
+    mavenCentral()
+    maven { url 'http://maven.twttr.com' }
+  }
+}
