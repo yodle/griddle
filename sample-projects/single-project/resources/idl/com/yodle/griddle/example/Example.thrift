@@ -1,4 +1,4 @@
-namespace java comm.yodle.griddle.example
+namespace java com.yodle.griddle.example
 
 service ExampleService {
 
