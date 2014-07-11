@@ -1,0 +1,5 @@
+apply plugin: 'idl'
+
+dependencies {
+  idl project(':heterogeneous-generators:idl-base')
+}

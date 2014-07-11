@@ -1,5 +1,9 @@
 include 'single-project',
 	'heterogeneous-generators',	
+	'heterogeneous-generators:idl-base',
+	'heterogeneous-generators:idl-dependent',
+	'heterogeneous-generators:java-consumer',
+	'heterogeneous-generators:scala-consumer',
 	'incremental-generation',
 	'incremental-generation-with-heterogeneous-generators',	
 	'jar-dependencies'

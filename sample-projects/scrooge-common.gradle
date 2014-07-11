@@ -1,0 +1,7 @@
+dependencies {
+    scroogeGen "com.twitter:scrooge-generator_2.10:3.13.2"
+
+    compile "org.scala-lang:scala-library:2.10.3"
+    compile "com.twitter:scrooge-runtime_2.10:3.13.2"
+    compile "org.apache.thrift:libthrift:0.5.0"
+}

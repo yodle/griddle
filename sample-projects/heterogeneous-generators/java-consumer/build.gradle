@@ -1,0 +1,7 @@
+apply plugin: 'thrift'
+
+apply from: "${rootDir}/thrift-common.gradle"
+
+dependencies {
+  idl project(':heterogeneous-generators:idl-dependent')
+}
