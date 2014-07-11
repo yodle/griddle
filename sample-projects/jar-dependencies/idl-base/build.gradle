@@ -1,0 +1,14 @@
+apply plugin: 'idl'
+apply plugin: 'maven'
+
+group = 'com.yodle.griddle.example'
+version = '0.1'
+jar.baseName = 'idl-base'
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+          repository(url: "file://${rootDir}/.repo")
+        }
+    }
+}

@@ -1,0 +1,28 @@
+apply plugin: 'idl'
+apply plugin: 'maven'
+
+group = 'com.yodle.griddle.example'
+version = '0.1'
+jar.baseName = 'idl-dependent'
+
+dependencies {
+  idl project(':jar-dependencies:idl-base')
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+        repository(url: "file://${rootDir}/.repo")
+        }
+    }
+}
+
+//Because the consuming project is in the same overall gradle project, and we want the sample
+//projects to be buildable with a single command, we're explicitly adding these dependencies so
+//the archives are uploaded _before_ consumer tries to build
+evaluationDependsOn(':jar-dependencies:idl-base')
+project(':jar-dependencies:idl-base').getTasksByName('uploadArchives', true).each {
+  uploadArchives.dependsOn it
+}
+
+conf2ScopeMappings.addMapping(1, configurations.idl, 'compile')

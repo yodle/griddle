@@ -1,0 +1,22 @@
+apply plugin: 'thrift'
+
+apply from: "${rootDir}/thrift-common.gradle"
+repositories {
+  maven {
+    url "${rootDir}/.repo"
+  }
+}
+
+dependencies {
+    idl 'com.yodle.griddle.example:idl-dependent:0.1'
+}
+
+
+//Because the consuming project is in the same overall gradle project, and we want the sample
+//projects to be buildable with a single command, we're explicitly adding these dependencies so
+//the archives are uploaded _before_ consumer tries to build
+evaluationDependsOn(':jar-dependencies:idl-dependent')
+project(':jar-dependencies:idl-dependent').getTasksByName('uploadArchives', true).each {
+  copyDependencyIdl.dependsOn it
+}
+
