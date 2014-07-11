@@ -1,0 +1,7 @@
+apply plugin: 'thrift'
+
+apply from: "${rootDir}/thrift-common.gradle"
+
+dependencies {
+  compiledIdl project(':incremental-generation:idl-base')
+}
