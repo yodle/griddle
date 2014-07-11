@@ -30,7 +30,7 @@ The `compiledIdl` configuration, much like the `idl` configuration, indicates th
 
 #### idlJar
 
-By default, all source thrift files of projects using the `idl` plugin will be included in the default jar produced by the project.  In the event that you want a jar containing _only_ the thrift files of the project, you may use the `idlJar` task.  It will create a jar with the classifier `idl` containing only the source thrift files of the project.
+By default, all source thrift files of projects using the `idl` plugin will be included in the default jar produced by the project.  In the event that you want a jar containing _only_ the thrift files of the project, you may use the `idlJar` task.  It will create a jar with the classifier `idl` containing only the source thrift files of the project.  The jar is added as an artifact of the project's `idl` configuration.  Thus other projects can specify that their dependency on this project use the `idl` configuration and get the idl jar, rather than the default jar.
 
 #### copyDependencyIdl and copyIncludedIdl
 
@@ -74,13 +74,13 @@ Much like the `thrift` plugin, the `scrooge` and `scrooge-java` plugins integrat
 
 #### scroogeGen
 
-The scrooge plugins adds a `scroogeGen` configuration.  This should be used to specify the dependency on the desired version of the scrooge generator plugin.  This configuration is _not_ applied as a `compile` dependency, so you will need to additionally specify a `compile` dependency on the desired version of the scrooge runtime.
+The scrooge plugins adds a `scroogeGen` configuration.  This should be used to specify the dependency on the desired version of the scrooge generator jar.  This configuration is _not_ applied as a `compile` dependency, so you will need to additionally specify a `compile` dependency on the desired version of the scrooge runtime.
 
 ### Tasks
 
 #### generateInterfaces
 
-The `generateInterfaces` task will automatically generate all thrift files provided by `idl` dependencies or under the `thriftSrcDir` specified for the project.  The `scrooge` plugin will generate native scala interfaces while the `scrooge-java` plugin will generate java interfaces.  By default, it will generate [finagled](https://github.com/twitter/finagle) interfaces.  This can be disabled by setting the `useFinagle` property on the `generateInterfaces` task to false.
+The `generateInterfaces` task will automatically generate all thrift files provided by `idl` dependencies or under the `thriftSrcDir` specified for the project.  The `scrooge` plugin will generate native scala interfaces while the `scrooge-java` plugin will generate java interfaces.  By default, they will both generate [finagled](https://github.com/twitter/finagle) interfaces.  This can be disabled by setting the `useFinagle` property on the `generateInterfaces` task to false.
 
 
 # Interaction With Idea Plugin
@@ -99,3 +99,234 @@ Lastly, you need to make sure that you generate interfaces _before_ running `gra
 
 
 # Sample Usages
+
+## Single Project
+
+The following is a sample single-project build.gradle file that is using the `scrooge` plugin to generate thrift files that are located in the non-standard directory 'resources/idl'.
+
+`build.gradle`
+    apply plugin: 'scrooge'
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        // Selects which generator to use for the idl
+        scroogeGen "com.twitter:scrooge-generator_2.10:3.13.2"
+
+	//Compile time dependencies for the generated interfaces
+        compile "org.scala-lang:scala-library:2.10.3"
+        compile "com.twitter:scrooge-runtime_2.10:3.13.2"
+        compile "org.apache.thrift:libthrift:0.5.0"
+    }
+
+    //non-standard configuration
+    thriftSrcDir = "${projectDir}/resources/idl"
+
+## Heterogeneous Generators
+
+This example shows how `idl` dependencies can be chained along and generated in a terminal 'consumer' project, each of which is responsible for generating the idl in the manner that it chooses.  This is useful when you have a few projects each of which is set up to use their own generators or if you do not want to share compiled code across repositories.  The projects in the example are as follows:
+
+* 'idl-base' contains a base thrift file,
+* 'idl-dependent' is an idl project whose files `include` the base thrift file in `idl-base`
+* 'java-consumer' is a java project which has an `idl` dependency on the idl projects so that it can generate them locally using Thrift
+* 'scala-consumer is a scala project which has an `idl` dependency on the idl projects so that it can generate them locally using Scrooge
+
+Note that the below examples exclude the specification of repositories and additional compile-time dependencies for the sake of brevity
+
+`idl-base/build.gradle`
+    apply plugin: 'idl'
+
+`idl-dependent/build.gradle`
+    apply plugin: 'idl'
+
+    dependencies {
+        idl project(':idl-base')
+    }  
+
+`java-consumer/build.gradle`
+    apply plugin: 'thrift'
+    
+    dependencies {
+        idl project(':idl-dependent')
+    }
+
+`scala-consumer/build.gradle`
+    apply plugin: 'scrooge'
+
+    dependencies {
+        idl project(':idl-dependent')
+    }
+
+## Incremental Generation
+
+The above approach works well if you need the flexibility of each consumer generating interfaces for itself or if different consumers are under the control of different teams.  However this can lend itself to inefficiency as the same interfaces get generated and compiled multiple times.  This example shows how to perform incremental generation of the interfaces so that they are only generated and compiled once, albeit at the cost of only allowing for one generator type.
+
+* 'idl-base' contains a base thrift file,
+* 'idl-dependent' is an idl project whose files `include` the base thrift file in `idl-base`
+* 'consumer' is a java project which consumes the already generated interfaces of the idl projects
+
+`idl-base/build.gradle`
+    apply plugin: 'thrift'
+
+`idl-dependent/build.gradle`
+    apply plugin: 'thrift'
+
+    dependencies {
+        //we specify a compiledIdl dependency because we want to specify that the dependency contains thrift files, but we don't want to generate them as we would an idl dependency
+        compiledIdl project(':idl-base')
+    }
+
+`consumer/build.gradle`
+    apply plugin: 'java'
+
+    dependencies {
+        compile project(':idl-dependent')
+    }
+
+
+## Incremental Generation With Multiple Generators
+
+This example demonstrates the best way we've currently found of enabling incremental generation with multiple different generators.  It does begin to increase the complexity of the project layout, especially in the presence of idl dependencies between projects, but saves a substantial amount of computation over having each consumer of the interfaces generate and compile the same interfaces over and over.  This example also demonstrates how incremental generation can co-exist with non-incremental generation.
+
+* 'idl-base' contains a base thrift file
+* 'idl-base/thrift' is responsible for generating the base thrift file using Thrift
+* 'idl-base/scrooge' is responsible for generating the base thrift file using Scrooge
+* 'idl-dependent' contains a thrift file which `include`s the file in `idl-base`
+* 'idl-dependent/thrift' is responsible for generating `idl-dependent`'s idl using Thrift
+* 'idl-dependent/scrooge' is responsible for generating `idl-dependent`'s idl using Scrooge
+* 'thrift-consumer' consumes the thrift interfaces generated by `idl-dependent/thrift`
+* 'scala-consumer' consumes the thrift interfaces generated by `idl-dependent/scrooge`
+* 'non-incremental-consumer' is a consumer that ignores the incrementally generated interfaces and generates all of its dependencies itself
+
+`idl-base/build.gradle`
+    apply plugin: 'idl'
+
+`idl-base/thrift/build.gradle`
+    apply plugin: 'thrift'
+    
+    dependencies {
+        idl project.getParent() 
+    }
+
+`idl-base/scrooge/build.gradle`
+    apply plugin: 'scrooge'
+    
+    dependencies {
+        idl project.getParent() 
+    }
+
+`idl-dependent/build.gradle`
+    apply plugin: 'idl'
+
+    dependencies {
+        idl project(':idl-base')
+    }
+
+`idl-dependent/thrift/build.gradle`
+    apply plugin: 'thrift'
+
+    dependencies {
+        compile project(':idl-base:thrift')
+
+        //this example uses project.getParent() rather than explicit dependencies on the parent because this setup can be extracted into an included .gradle file so it can be shared by a number of projects
+        idl (project.getParent()) { transitive=false } //We exclude transitive dependencies here because we only want to generate the idl that is native to idl-dependent
+        compiledIdl (project.getParent()) //But we need a compiledIdl dependency on our parent's transitive deps because those dependencies are included by our parent's thrift files
+    }
+
+`idl-dependent/thrift/build.gradle`
+    apply plugin: 'scrooge'
+
+    dependencies {
+        compile project(':idl-base:scrooge')
+
+        idl (project.getParent()) { transitive=false }
+        compiledIdl (project.getParent())
+    }
+
+`thrift-consumer/build.gradle`
+    apply plugin: 'java'
+    
+    dependencies {
+        compile project(':idl-dependent:thrift')
+    }
+
+`scrooge-consumer/build.gradle`
+    apply plugin: 'scala'
+    
+    dependencies {
+        compile project(':idl-dependent:scrooge')
+    }
+
+`non-incremental-consumer/build.gradle`
+    apply plugin: 'thrift'
+
+    dependencies {
+      idl project(':idl-dependent')
+    }
+
+
+## Idl Dependencies Via Jar
+
+All the above examples demonstrate idl dependencies being propogated via gradle project dependencies.  However the gradle project that hosts the thrift files may not live in the same overall build as the project that consumes them.  This example demonstrates one set of projects producing idl jars and a separate project depending on them through an intermediate maven repo (on the local filesystem) rather than via a direct gradle project dependcency.
+
+
+* 'idl-base' contains a base thrift file
+* 'idl-dependent' contains a thrift file which `include`s the file in `idl-base`
+* 'consumer' generates the thrift files provided by the idl projects as a jar retrieved through maven
+
+`idl-base/build.gradle`
+    apply plugin: 'idl'
+    apply plugin: 'maven'
+
+    group = 'com.yodle.griddle.example'
+    version = '0.1'
+    jar.baseName = 'idl-base'
+    
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+	        repository(url: "file://localhost/${projectDir}/.repo")
+            }
+        }
+    }
+
+`idl-dependent/build.gradle`
+    apply plugin: 'idl'
+    apply plugin: 'maven'
+
+    group = 'com.yodle.griddle.example'
+    version = '0.1'
+    jar.baseName = 'idl-dependent'
+
+    dependencies {
+        project(":idl-base")
+    }
+    
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+	        repository(url: "file://${projectDir}/.repo")
+            }
+        }
+    }
+
+`consumer/build.gradle`
+    apply plugin: 'thrift'
+
+    repositories {
+        url "${projectDir}/.repo"
+    }
+
+    dependencies {
+        idl 'com.yodle.griddle.example:idl-dependent:0.1'
+    }
+
+
+
+    
+
+
+
+
