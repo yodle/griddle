@@ -105,6 +105,7 @@ Lastly, you need to make sure that you generate interfaces _before_ running `gra
 The following is a sample single-project build.gradle file that is using the `scrooge` plugin to generate thrift files that are located in the non-standard directory 'resources/idl'.
 
 `build.gradle`
+
     apply plugin: 'scrooge'
 
     repositories {
@@ -136,9 +137,11 @@ This example shows how `idl` dependencies can be chained along and generated in 
 Note that the below examples exclude the specification of repositories and additional compile-time dependencies for the sake of brevity
 
 `idl-base/build.gradle`
+
     apply plugin: 'idl'
 
 `idl-dependent/build.gradle`
+
     apply plugin: 'idl'
 
     dependencies {
@@ -146,6 +149,7 @@ Note that the below examples exclude the specification of repositories and addit
     }  
 
 `java-consumer/build.gradle`
+
     apply plugin: 'thrift'
     
     dependencies {
@@ -153,6 +157,7 @@ Note that the below examples exclude the specification of repositories and addit
     }
 
 `scala-consumer/build.gradle`
+
     apply plugin: 'scrooge'
 
     dependencies {
@@ -168,9 +173,11 @@ The above approach works well if you need the flexibility of each consumer gener
 * 'consumer' is a java project which consumes the already generated interfaces of the idl projects
 
 `idl-base/build.gradle`
+
     apply plugin: 'thrift'
 
 `idl-dependent/build.gradle`
+
     apply plugin: 'thrift'
 
     dependencies {
@@ -179,6 +186,7 @@ The above approach works well if you need the flexibility of each consumer gener
     }
 
 `consumer/build.gradle`
+
     apply plugin: 'java'
 
     dependencies {
@@ -201,9 +209,11 @@ This example demonstrates the best way we've currently found of enabling increme
 * 'non-incremental-consumer' is a consumer that ignores the incrementally generated interfaces and generates all of its dependencies itself
 
 `idl-base/build.gradle`
+
     apply plugin: 'idl'
 
 `idl-base/thrift/build.gradle`
+
     apply plugin: 'thrift'
     
     dependencies {
@@ -211,6 +221,7 @@ This example demonstrates the best way we've currently found of enabling increme
     }
 
 `idl-base/scrooge/build.gradle`
+
     apply plugin: 'scrooge'
     
     dependencies {
@@ -218,6 +229,7 @@ This example demonstrates the best way we've currently found of enabling increme
     }
 
 `idl-dependent/build.gradle`
+
     apply plugin: 'idl'
 
     dependencies {
@@ -225,6 +237,7 @@ This example demonstrates the best way we've currently found of enabling increme
     }
 
 `idl-dependent/thrift/build.gradle`
+
     apply plugin: 'thrift'
 
     dependencies {
@@ -236,6 +249,7 @@ This example demonstrates the best way we've currently found of enabling increme
     }
 
 `idl-dependent/thrift/build.gradle`
+
     apply plugin: 'scrooge'
 
     dependencies {
@@ -246,6 +260,7 @@ This example demonstrates the best way we've currently found of enabling increme
     }
 
 `thrift-consumer/build.gradle`
+
     apply plugin: 'java'
     
     dependencies {
@@ -253,6 +268,7 @@ This example demonstrates the best way we've currently found of enabling increme
     }
 
 `scrooge-consumer/build.gradle`
+
     apply plugin: 'scala'
     
     dependencies {
@@ -260,6 +276,7 @@ This example demonstrates the best way we've currently found of enabling increme
     }
 
 `non-incremental-consumer/build.gradle`
+
     apply plugin: 'thrift'
 
     dependencies {
@@ -277,6 +294,7 @@ All the above examples demonstrate idl dependencies being propogated via gradle 
 * 'consumer' generates the thrift files provided by the idl projects as a jar retrieved through maven
 
 `idl-base/build.gradle`
+
     apply plugin: 'idl'
     apply plugin: 'maven'
 
@@ -293,6 +311,7 @@ All the above examples demonstrate idl dependencies being propogated via gradle 
     }
 
 `idl-dependent/build.gradle`
+
     apply plugin: 'idl'
     apply plugin: 'maven'
 
@@ -313,6 +332,7 @@ All the above examples demonstrate idl dependencies being propogated via gradle 
     }
 
 `consumer/build.gradle`
+
     apply plugin: 'thrift'
 
     repositories {
