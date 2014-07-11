@@ -90,8 +90,7 @@ If you are using the [IntelliJ Idea](http://www.gradle.org/docs/current/userguid
     idea.module {
         excludeDirs -= file(buildDir)
         excludeDirs += file("${buildDir}/classes") //Not strictly necessary, but nice for cleanliness
-	sourceDirs += file("${thriftGenDir}/gen-java") //For the thrift plugin only
-
+        sourceDirs += file("${thriftGenDir}/gen-java") //For the thrift plugin only
     }
 
 excluding any other subdirectories of the build dir that you would like.  Additionally, if you are using the `thrift` plugin, you will need to compensate for the fact that the thrift generator will always generate to a subdirectory of the directory you point it to.  For example, if you are generating java interfaces, you will need to add '${thriftGenDir}/gen-java' as a source directory.
