@@ -1,11 +1,8 @@
-package com.yodle.gradle
+package com.yodle.griddle
 
 import org.gradle.api.Action
-import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.gradle.api.internal.artifacts.dependencies.DefaultProjectDependency
-import org.gradle.api.tasks.bundling.Jar
 
 abstract class ScroogePlugin extends GeneratingPlugin {
 

@@ -1,4 +1,4 @@
-package com.yodle.gradle
+package com.yodle.griddle
 
 import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.InputFiles

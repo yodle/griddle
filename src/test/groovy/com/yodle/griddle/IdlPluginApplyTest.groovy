@@ -1,10 +1,10 @@
-package com.yodle.gradle
+package com.yodle.griddle
 
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 
-class ThriftPluginApplyTest extends Specification {
+class IdlPluginApplyTest extends Specification {
 
   Project project
 
@@ -12,12 +12,12 @@ class ThriftPluginApplyTest extends Specification {
     project = ProjectBuilder.builder().build()
   }
 
-  void "applying thrift plugin adds plugin"() {
+  void "applying idl plugin adds plugin"() {
     when:
-      project.apply plugin: 'thrift'
+      project.apply plugin: 'idl'
 
     then:
-      project.plugins.hasPlugin(ThriftPlugin)
+      project.plugins.hasPlugin(IdlPlugin)
   }
 
 }

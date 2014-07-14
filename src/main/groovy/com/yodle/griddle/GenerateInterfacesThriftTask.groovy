@@ -1,10 +1,8 @@
-package com.yodle.gradle
+package com.yodle.griddle
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.FileCollection
-import org.gradle.api.tasks.Exec
 import org.gradle.api.tasks.InputFiles
-import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.OutputDirectories
 import org.gradle.api.tasks.TaskAction
 
