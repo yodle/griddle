@@ -87,7 +87,7 @@ The `generateInterfaces` task will automatically generate all thrift files provi
 
 If you are using the [IntelliJ Idea](http://www.gradle.org/docs/current/userguide/idea_plugin.html) plugin alongside the `thrift`, `scrooge`, or `scrooge-java` plugins, the `thrift` and `scrooge` plugins will perform a few additional steps to ensure that the idea modules are generated successfull.  By default, the the generator projects generate into a folder under the build directory, however this directory is automatically marked as excluded by the idea plugin and will not be added as a project source directory within Idea.  To get around this, the plugins unmark `buildDir` as an excluded directory (and mark a number of other expected subdirectories of buildDir as excluded).  
 
-Additionally, the `idea` plugin requires that the `thriftGenDir` folder exist when the `ideaModule` tasks runs, otherwise it will not be added as a project source directory.  This the plugins will add `generateInterfaces` as a dependency of the `ideaModule` task.
+Additionally, the `idea` plugin requires that the `thriftGenDir` folder exist when the `ideaModule` tasks runs, otherwise it will not be added as a project source directory.  Thus the plugins will ensure those folders are created before the idea module files are generated.
 
 # Sample Usages
 
