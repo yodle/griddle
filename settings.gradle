@@ -30,5 +30,9 @@ include 'test-projects:test-generate-idl',
 	'test-projects:test-thrift-generator-ignores-non-thrift-files',
 	'test-projects:test-dont-include-empty-dirs-in-dependency-idl',
 	'test-projects:test-dont-include-empty-dirs-in-dependency-idl:dependency',
-	'test-projects:test-dont-include-empty-dirs-in-dependency-idl:dependent'
+	'test-projects:test-dont-include-empty-dirs-in-dependency-idl:dependent',
+	'test-projects:test-upload-archives',
+	'test-projects:test-upload-archives:consumer',
+	'test-projects:test-upload-archives:idl-dependency',
+	'test-projects:test-upload-archives:compiled-idl-dependency'
 

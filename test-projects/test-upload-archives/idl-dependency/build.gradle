@@ -1,0 +1,4 @@
+apply plugin: 'idl'
+
+group = 'com.yodle.griddle.example'
+version = '0.1'

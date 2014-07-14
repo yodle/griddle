@@ -1,0 +1,50 @@
+apply plugin: 'scrooge'
+apply plugin: 'maven'
+apply from: "${rootDir}/test-projects/common.gradle"
+
+group = 'com.yodle.griddle.example'
+version = '0.1'
+jar.baseName = 'test-upload-archives-consumer'
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+          repository(url: "file://${buildDir}/.repo")
+        }
+    }
+}
+
+dependencies {
+  idl project(":test-projects:test-upload-archives:idl-dependency")
+  compiledIdl project(":test-projects:test-upload-archives:compiled-idl-dependency")
+}
+
+task testDependenciesAddedToPom << {
+  def found = false 
+  def pomFileText = ''
+  fileTree("${buildDir}/.repo").visit{ 
+    if (it.file.path.endsWith('.pom')) {
+      pomFileText = it.file.text
+      found = true
+    }
+  }
+
+  if (!found)
+    throw new RuntimeException("Couldn't find POM file")
+
+  
+  if (!pomFileText.contains('<artifactId>idl-dependency</artifactId>'))
+    throw new RuntimeException("POM did not contain reference to pure idl dependency")
+
+  if (!pomFileText.contains('<artifactId>compiled-idl-dependency</artifactId>'))
+    throw new RuntimeException("POM did not contain reference to compiled idl dependency")
+}
+
+testDependenciesAddedToPom.dependsOn uploadArchives
+test.dependsOn testDependenciesAddedToPom
+
+
+
+
+
+

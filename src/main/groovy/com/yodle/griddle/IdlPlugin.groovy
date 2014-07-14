@@ -3,6 +3,8 @@ package com.yodle.griddle
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.maven.Conf2ScopeMappingContainer
+import org.gradle.api.plugins.MavenPlugin
 import org.gradle.api.tasks.bundling.Jar
 
 class IdlPlugin implements Plugin<Project> {
@@ -14,8 +16,8 @@ class IdlPlugin implements Plugin<Project> {
   @Override void apply(Project project) {
     project.plugins.apply('java')
 
-    project.configurations.create(IDL_CONFIGURATION)
-    project.configurations.create(COMPILED_IDL_CONFIGURATION)
+    def idlConfiguration = project.configurations.create(IDL_CONFIGURATION)
+    def compiledIdlConfiguration = project.configurations.create(COMPILED_IDL_CONFIGURATION)
 
     project.configurations.getByName('compile').extendsFrom project.configurations.getByName(COMPILED_IDL_CONFIGURATION)
     project.configurations.getByName('default').extendsFrom project.configurations.getByName(IDL_CONFIGURATION)
@@ -46,5 +48,11 @@ class IdlPlugin implements Plugin<Project> {
     project.artifacts.add(IDL_CONFIGURATION, project.tasks.getByName('idlJar'))
 
     project.tasks.getByName('assemble').dependsOn 'idlJar'
+
+
+    project.plugins.withType(MavenPlugin) {
+      project.conf2ScopeMappings.addMapping(1, idlConfiguration, Conf2ScopeMappingContainer.COMPILE)
+      project.conf2ScopeMappings.addMapping(1, compiledIdlConfiguration, Conf2ScopeMappingContainer.COMPILE)
+    }
   }
 }
