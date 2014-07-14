@@ -100,9 +100,11 @@ Lastly, you need to make sure that you generate interfaces _before_ running `gra
 
 # Sample Usages
 
+The following sample build.gradle files correspond to projects in the sample-projects folder.  Each demonstrates a model of how one or more of the Griddle plugins can be used.  The sample projects will all build via a `gradle build` command.  You may need to provide a `thrift` binary available on your `$PATH` for projects using the `thrift` plugin.  Note that some of the sample build.gradle files below are incomplete as they have been edited for brevity.  Refer to the build.gradle files in the sample projects for the full, working build files.
+
 ## Single Project
 
-The following is a sample single-project build.gradle file that is using the `scrooge` plugin to generate thrift files that are located in the non-standard directory 'resources/idl'.
+The following is a sample single-project build.gradle file that is using the `scrooge` plugin to generate thrift files that are located in the non-standard directory 'resources/idl'.  This model is useful when you have no cross-project idl dependencies and only need a single generator.
 
 `build.gradle`
 
@@ -166,7 +168,7 @@ Note that the below examples exclude the specification of repositories and addit
 
 ## Incremental Generation
 
-The above approach works well if you need the flexibility of each consumer generating interfaces for itself or if different consumers are under the control of different teams.  However this can lend itself to inefficiency as the same interfaces get generated and compiled multiple times.  This example shows how to perform incremental generation of the interfaces so that they are only generated and compiled once, albeit at the cost of only allowing for one generator type.
+The above approach works well if you need the flexibility of each consumer generating interfaces for itself or if different consumers are under the control of different teams.  However this can lend itself to inefficiency as the same interfaces get generated and compiled multiple times by each consumer.  This example shows how to perform incremental generation of the interfaces so that they are only generated and compiled once, albeit at the cost of only allowing for one generator type.
 
 * 'idl-base' contains a base thrift file,
 * 'idl-dependent' is an idl project whose files `include` the base thrift file in `idl-base`
@@ -245,7 +247,7 @@ This example demonstrates the best way we've currently found of enabling increme
 
         //this example uses project.getParent() rather than explicit dependencies on the parent because this setup can be extracted into an included .gradle file so it can be shared by a number of projects
         idl (project.getParent()) { transitive=false } //We exclude transitive dependencies here because we only want to generate the idl that is native to idl-dependent
-        compiledIdl (project.getParent()) //But we need a compiledIdl dependency on our parent's transitive deps because those dependencies are included by our parent's thrift files
+        compiledIdl (project.getParent()) //But we need a compiledIdl dependency on our parent's transitive deps because those dependencies are included by our parent's thrift files, even though they are not generated
     }
 
 `idl-dependent/thrift/build.gradle`
@@ -286,7 +288,9 @@ This example demonstrates the best way we've currently found of enabling increme
 
 ## Idl Dependencies Via Jar
 
-All the above examples demonstrate idl dependencies being propogated via gradle project dependencies.  However the gradle project that hosts the thrift files may not live in the same overall build as the project that consumes them.  This example demonstrates one set of projects producing idl jars and a separate project depending on them through an intermediate maven repo (on the local filesystem) rather than via a direct gradle project dependcency.
+All the above examples demonstrate idl dependencies being propogated via gradle project dependencies.  However the gradle project that hosts the thrift files may not live in the same overall build as the project that consumes them.  This example demonstrates one set of projects producing idl jars and a separate project depending on them through an intermediate maven repo (on the local filesystem) rather than via a direct gradle project dependcency.  This example shows a pure `idl` dependency, however `compiledIdl` dependencies also work.  Jar based dependencies could be used in place of any of the project dependencies in any of the above sample projects.
+
+Note that in the sample project itself, there is an explicitly added dependency from the consuming project to the producing projects' uploadArtifacts tasks.  This is done purely to enable a single `gradle build` to build the sample project.  In a real project, it would be expected that the producing projects would upload their atifacts to something like Nexus or Artifactory as one step, and as a completely separate step the consumer would be built and pull those artifacts down.
 
 
 * 'idl-base' contains a base thrift file
