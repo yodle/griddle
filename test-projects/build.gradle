@@ -4,4 +4,6 @@ subprojects {
       classpath project(':')
     }
   }
+
+  apply plugin: 'idea'
 }
