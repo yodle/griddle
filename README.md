@@ -85,18 +85,9 @@ The `generateInterfaces` task will automatically generate all thrift files provi
 
 # Interaction With Idea Plugin
 
-If you are using the [IntelliJ Idea](http://www.gradle.org/docs/current/userguide/idea_plugin.html) plugin alongside the `thrift`, `scrooge`, or `scrooge-java` plugins, there are a couple extra steps you will need to take to ensure that your project imports successfully.  By default, the the generator projects generate into a folder under the build directory, however this directory is automatically marked as excluded by the idea plugin and will not be added as a project directory.  To get around this, you will either need to move the `thriftGenDir` outside the build directory or modify the idea plugin's exclude settings via:
+If you are using the [IntelliJ Idea](http://www.gradle.org/docs/current/userguide/idea_plugin.html) plugin alongside the `thrift`, `scrooge`, or `scrooge-java` plugins, the `thrift` and `scrooge` plugins will perform a few additional steps to ensure that the idea modules are generated successfull.  By default, the the generator projects generate into a folder under the build directory, however this directory is automatically marked as excluded by the idea plugin and will not be added as a project source directory within Idea.  To get around this, the plugins unmark `buildDir` as an excluded directory (and mark a number of other expected subdirectories of buildDir as excluded).  
 
-    idea.module {
-        excludeDirs -= file(buildDir)
-        excludeDirs += file("${buildDir}/classes") //Not strictly necessary, but nice for cleanliness
-        sourceDirs += file("${thriftGenDir}/gen-java") //For the thrift plugin only
-    }
-
-excluding any other subdirectories of the build dir that you would like.  Additionally, if you are using the `thrift` plugin, you will need to compensate for the fact that the thrift generator will always generate to a subdirectory of the directory you point it to.  For example, if you are generating java interfaces, you will need to add '${thriftGenDir}/gen-java' as a source directory.
-
-Lastly, you need to make sure that you generate interfaces _before_ running `gradle idea`.  Otherwise the `thriftGenDir` directory will not yet exist and IDEA will not add it as a source directory.
-
+Additionally, the `idea` plugin requires that the `thriftGenDir` folder exist when the `ideaModule` tasks runs, otherwise it will not be added as a project source directory.  This the plugins will add `generateInterfaces` as a dependency of the `ideaModule` task.
 
 # Sample Usages
 
