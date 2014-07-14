@@ -35,10 +35,11 @@ abstract class GeneratingPlugin implements Plugin<Project> {
         excludeDirs += project.file("${buildDir}/test-results")
         excludeDirs += project.file("${buildDir}/resources")
       }
-
-      //If ideaModule runs before the folders created by generateInterfaces exist, it will not add them as a source dir
-      //so make them now
-      project.file("${project.thriftGenDir}").mkdirs()
+      project.ideaModule.doFirst {
+        //If ideaModule runs before the folders created by generateInterfaces exist, it will not add them as a source dir
+        //so make them now
+        project.file("${project.thriftGenDir}").mkdirs()
+      }
     }
   }
 

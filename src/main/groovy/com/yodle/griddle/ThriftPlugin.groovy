@@ -15,8 +15,9 @@ class ThriftPlugin extends GeneratingPlugin {
         //the most likely option
         sourceDirs += project.file("${project.thriftGenDir}/gen-java")
       }
-
-      project.file("${project.thriftGenDir}/gen-java").mkdirs()
+      project.ideaModule.doFirst {
+        project.file("${project.thriftGenDir}/gen-java").mkdirs()
+      }
     }
   }
 
