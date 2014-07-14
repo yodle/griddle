@@ -1,4 +1,4 @@
-namespace java com.yodle.gradle.test
+namespace java com.yodle.griddle.test
 
 service TestGenerateService2 {
 

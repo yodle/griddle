@@ -1,5 +1,5 @@
 include "TestGenerateIdl.thrift"
-namespace java com.yodle.gradle.test
+namespace java com.yodle.griddle.test
 
 service TestGenerateDependentService extends TestGenerateIdl.TestGenerateService {
 
