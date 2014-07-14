@@ -34,14 +34,11 @@ abstract class GeneratingPlugin implements Plugin<Project> {
         excludeDirs += project.file("${buildDir}/tmp")
         excludeDirs += project.file("${buildDir}/test-results")
         excludeDirs += project.file("${buildDir}/resources")
-
-        //Thrift generates into a subdirectory of thriftGenDir based on language.  Automatically add java since that's
-        //the most likely option
-        sourceDirs += project.file("${project.thriftGenDir}/gen-java")
       }
 
       //If ideaModule runs before the folders created by generateInterfaces exist, it will not add them as a source dir
-      project.ideaModule.dependsOn project.generateInterfaces
+      //so make them now
+      project.file("${project.thriftGenDir}").mkdirs()
     }
   }
 
