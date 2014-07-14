@@ -74,7 +74,7 @@ Much like the `thrift` plugin, the `scrooge` and `scrooge-java` plugins integrat
 
 #### scroogeGen
 
-The scrooge plugins adds a `scroogeGen` configuration.  This should be used to specify the dependency on the desired version of the scrooge generator jar.  This configuration is _not_ applied as a `compile` dependency, so you will need to additionally specify a `compile` dependency on the desired version of the scrooge runtime.
+The scrooge plugins add a `scroogeGen` configuration.  This should be used to specify the dependency on the desired version of the scrooge generator jar.  This configuration is _not_ applied as a `compile` dependency, so you will need to additionally specify a `compile` dependency on the desired version of the scrooge runtime.
 
 ### Tasks
 
