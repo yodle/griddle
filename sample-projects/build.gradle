@@ -1,7 +1,7 @@
 subprojects {
   buildscript {
     dependencies {
-      classpath files("${rootDir}/../releases/griddle-1.3.jar")
+      classpath files("${rootDir}/../releases/griddle-1.4.jar")
     }
   }
 
