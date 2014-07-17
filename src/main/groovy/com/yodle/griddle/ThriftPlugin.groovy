@@ -10,12 +10,12 @@ class ThriftPlugin extends GeneratingPlugin {
   void apply(Project project) {
     super.apply(project)
     project.plugins.withType(IdeaPlugin) {
-      project.idea.module {
-        //Thrift generates into a subdirectory of thriftGenDir based on language.  Automatically add java since that's
-        //the most likely option
-        sourceDirs += project.file("${project.thriftGenDir}/gen-java")
-      }
       project.ideaModule.doFirst {
+        project.idea.module {
+          //Thrift generates into a subdirectory of thriftGenDir based on language.  Automatically add java since that's
+          //the most likely option
+            sourceDirs += project.file("${project.thriftGenDir}/gen-java")
+          }
         project.file("${project.thriftGenDir}/gen-java").mkdirs()
       }
     }

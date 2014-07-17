@@ -25,17 +25,18 @@ abstract class GeneratingPlugin implements Plugin<Project> {
     mainSourceSet.srcDir {project.thriftGenDir}
 
     project.plugins.withType(IdeaPlugin) {
-      project.idea.module {
-        def buildDir = project.buildDir
-        //Idea will exclude the build dir,even if it's told to include a subdirectory of the build dir.  So override
-        //the excludes so that the build dir isn't excluded but the other subdirectories we don't care about are.
-        excludeDirs -= project.file("${buildDir}")
-        excludeDirs += project.file("${buildDir}/classes")
-        excludeDirs += project.file("${buildDir}/tmp")
-        excludeDirs += project.file("${buildDir}/test-results")
-        excludeDirs += project.file("${buildDir}/resources")
-      }
       project.ideaModule.doFirst {
+        project.idea.module {
+          def buildDir = project.buildDir
+          //Idea will exclude the build dir,even if it's told to include a subdirectory of the build dir.  So override
+          //the excludes so that the build dir isn't excluded but the other subdirectories we don't care about are.
+          excludeDirs -= project.file("${buildDir}")
+          excludeDirs += project.file("${buildDir}/classes")
+          excludeDirs += project.file("${buildDir}/tmp")
+          excludeDirs += project.file("${buildDir}/test-results")
+          excludeDirs += project.file("${buildDir}/resources")
+        }
+
         //If ideaModule runs before the folders created by generateInterfaces exist, it will not add them as a source dir
         //so make them now
         project.file("${project.thriftGenDir}").mkdirs()
