@@ -4,7 +4,7 @@ apply plugin: 'eclipse'
 apply plugin: 'maven'
 
 sourceCompatibility = 1.6
-version = '1.5'
+version = '1.6'
 group = 'com.yodle.griddle'
 jar.baseName = 'griddle'
 
