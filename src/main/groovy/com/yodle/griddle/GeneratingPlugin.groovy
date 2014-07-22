@@ -4,6 +4,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.plugins.ide.idea.IdeaPlugin
+import org.gradle.plugins.ide.eclipse.EclipsePlugin
 
 abstract class GeneratingPlugin implements Plugin<Project> {
   public static final GENERATE_INTERFACES_TASK_NAME = 'generateInterfaces'
@@ -22,7 +23,7 @@ abstract class GeneratingPlugin implements Plugin<Project> {
     }
 
     def mainSourceSet = getMainSourceSet(project)
-    mainSourceSet.srcDir {project.thriftGenDir}
+    mainSourceSet.srcDir {getAdjustedThriftGenDir(project)}
 
     project.plugins.withType(IdeaPlugin) {
       project.ideaModule.doFirst {
@@ -39,11 +40,22 @@ abstract class GeneratingPlugin implements Plugin<Project> {
 
         //If ideaModule runs before the folders created by generateInterfaces exist, it will not add them as a source dir
         //so make them now
-        project.file("${project.thriftGenDir}").mkdirs()
+        project.file("${getAdjustedThriftGenDir(project)}").mkdirs()
+      }
+    }
+
+    project.plugins.withType(EclipsePlugin) {
+      project.eclipseClasspath.doFirst {
+        //If the eclipse tasks runs before the folders created by generateInterfaces exist, it will not add them as a source dir
+        //so make them now
+        project.file("${getAdjustedThriftGenDir(project)}").mkdirs()
       }
     }
   }
 
   abstract protected getMainSourceSet(Project project);
-  abstract protected Task createGenerateInterfacesTask(Project project)
+  abstract protected Task createGenerateInterfacesTask(Project project);
+  protected String getAdjustedThriftGenDir(Project project) {
+    return project.thriftGenDir;
+  }
 }
