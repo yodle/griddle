@@ -3,6 +3,7 @@ apply plugin: 'idea'
 apply plugin: 'eclipse'
 apply plugin: 'maven'
 
+
 sourceCompatibility = 1.6
 version = '1.7'
 group = 'com.yodle.griddle'
@@ -22,3 +23,6 @@ dependencies {
 task wrapper(type: Wrapper) {
     gradleVersion = '1.11'
 }
+
+if (hasProperty('publishing'))
+  apply from: 'publishing.gradle'
