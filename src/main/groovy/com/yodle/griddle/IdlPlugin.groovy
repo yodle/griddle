@@ -35,7 +35,7 @@ class IdlPlugin implements Plugin<Project> {
     def compiledIdlConfiguration = project.configurations.create(COMPILED_IDL_CONFIGURATION)
 
     project.configurations.getByName('compile').extendsFrom project.configurations.getByName(COMPILED_IDL_CONFIGURATION)
-    project.configurations.getByName('default').extendsFrom project.configurations.getByName(IDL_CONFIGURATION)
+    project.configurations.getByName('compile').extendsFrom project.configurations.getByName(IDL_CONFIGURATION)
 
     project.ext.set('thriftSrcDir',"${project.getProjectDir().getPath()}/src/main/thrift")
     project.ext.set('thriftGenDir', "${project.getProjectDir().getPath()}/build/gen-src")
