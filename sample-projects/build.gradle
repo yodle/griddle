@@ -1,10 +1,13 @@
-subprojects {
-  buildscript {
-    dependencies {
-      classpath files("${rootDir}/../releases/griddle-1.7.jar")
-    }
+buildscript {
+  repositories() {
+    mavenCentral()
   }
+  dependencies {
+    classpath 'com.yodle.griddle:griddle:1.7'
+  }
+}
 
+subprojects {
   repositories {
     mavenCentral()
     maven { url 'http://maven.twttr.com' }

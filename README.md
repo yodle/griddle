@@ -93,6 +93,22 @@ By default, the the generator projects generate into a folder under the build di
 
 The following sample build.gradle files correspond to projects in the sample-projects folder.  Each demonstrates a model of how one or more of the Griddle plugins can be used.  The sample projects will all build via a `gradle build` command.  You may need to provide a `thrift` binary available on your `$PATH` for projects using the `thrift` plugin.  Note that some of the sample build.gradle files below are incomplete as they have been edited for brevity.  Refer to the build.gradle files in the sample projects for the full, working build files.
 
+## Adding Griddle Plugins To Your Build
+
+Griddle is available in [Maven Central](http://search.maven.org/).  To enable your projects to use the Griddle plugins, add the following to your root `build.gradle` file:
+
+`build.gradle`
+    buildscript {
+      repositories() {
+        mavenCentral()
+      }
+      dependencies {
+        classpath 'com.yodle.griddle:griddle:1.7'
+      }
+    }
+
+You can, of course, replace `mavenCentral()` with any repository which either is configured to pull unknown jars from Maven Central or to which you have manually deployed the Griddle jar.  For brevity, this code is omitted from all subsequent sample build.gradle files.
+
 ## Single Project
 
 The following is a sample single-project build.gradle file that is using the `scrooge` plugin to generate thrift files that are located in the non-standard directory 'resources/idl'.  This model is useful when you have no cross-project idl dependencies and only need a single generator.
@@ -120,7 +136,7 @@ The following is a sample single-project build.gradle file that is using the `sc
 
 ## Heterogeneous Generators
 
-This example shows how `idl` dependencies can be chained along and generated in a terminal 'consumer' project, each of which is responsible for generating the idl in the manner that it chooses.  This is useful when you have a few projects each of which is set up to use their own generators or if you do not want to share compiled code across repositories.  The projects in the example are as follows:
+This example shows how `idl` dependencies can be chained along and generated in a terminal 'consumer' project, each of which is responsible for generating the idl in the manner that it chooses.  This is useful when you have a few projects each of which is set up to use their own generators or if you do not want to share compiled code across repositories. The projects in the example are as follows:
 
 * 'idl-base' contains a base thrift file,
 * 'idl-dependent' is an idl project whose files `include` the base thrift file in `idl-base`
