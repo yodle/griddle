@@ -98,13 +98,14 @@ The following sample build.gradle files correspond to projects in the sample-pro
 Griddle is available in [Maven Central](http://search.maven.org/).  To enable your projects to use the Griddle plugins, add the following to your root `build.gradle` file:
 
 `build.gradle`
+
     buildscript {
-      repositories() {
-        mavenCentral()
-      }
-      dependencies {
-        classpath 'com.yodle.griddle:griddle:1.7'
-      }
+        repositories() {
+            mavenCentral()
+        }
+        dependencies {
+            classpath 'com.yodle.griddle:griddle:1.7'
+        }
     }
 
 You can, of course, replace `mavenCentral()` with any repository which either is configured to pull unknown jars from Maven Central or to which you have manually deployed the Griddle jar.  For brevity, this code is omitted from all subsequent sample build.gradle files.
