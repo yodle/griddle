@@ -18,7 +18,10 @@ package com.yodle.griddle
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.DependencySet
+import org.gradle.api.artifacts.PublishArtifact
 import org.gradle.api.artifacts.maven.Conf2ScopeMappingContainer
+import org.gradle.api.internal.java.JavaLibrary
 import org.gradle.api.plugins.MavenPlugin
 import org.gradle.api.tasks.bundling.Jar
 
@@ -60,7 +63,7 @@ class IdlPlugin implements Plugin<Project> {
     project.tasks.getByName('idlJar').from {project.thriftSrcDir}
     project.tasks.getByName('jar').from {project.thriftSrcDir}
 
-    project.artifacts.add(IDL_CONFIGURATION, project.tasks.getByName('idlJar'))
+    PublishArtifact idlArtifact = project.artifacts.add(IDL_CONFIGURATION, project.tasks.getByName('idlJar'))
 
     project.tasks.getByName('assemble').dependsOn 'idlJar'
 
@@ -69,5 +72,20 @@ class IdlPlugin implements Plugin<Project> {
       project.conf2ScopeMappings.addMapping(1, idlConfiguration, Conf2ScopeMappingContainer.COMPILE)
       project.conf2ScopeMappings.addMapping(1, compiledIdlConfiguration, Conf2ScopeMappingContainer.COMPILE)
     }
+
+    project.components.add(new IdlJavaLibrary(idlArtifact, idlConfiguration.allDependencies))
+
+  }
+}
+
+class IdlJavaLibrary extends JavaLibrary {
+
+  IdlJavaLibrary(PublishArtifact jarArtifact, DependencySet runtimeDependencies) {
+    super(jarArtifact, runtimeDependencies)
+  }
+
+  @Override
+  String getName() {
+    return IdlPlugin.IDL_CONFIGURATION
   }
 }
