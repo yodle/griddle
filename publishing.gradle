@@ -54,7 +54,7 @@ uploadArchives {
           developer {
             id 'dkesler'
             name 'David Kesler'
-            email 'dkesler@yodle.com'
+            email 'keslerdr@gmail.com'
           }
         }
       }
