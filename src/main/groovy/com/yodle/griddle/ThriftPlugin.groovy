@@ -49,8 +49,12 @@ class ThriftPlugin extends GeneratingPlugin {
     return generateInterfacesTask
   }
 
-  @Override protected String getAdjustedThriftGenDir(Project project)
+  @Override protected String getAdjustedThriftGenDir(Project project, String language)
   {
-    return project.thriftGenDir + "/gen-java";
+    String outDir = "/gen-java";
+    if (language.contains("beans")) {
+      outDir = "/gen-javabean";
+    }
+    return project.thriftGenDir + outDir;
   }
 }

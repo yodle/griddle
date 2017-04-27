@@ -38,7 +38,7 @@ abstract class GeneratingPlugin implements Plugin<Project> {
     }
 
     def mainSourceSet = getMainSourceSet(project)
-    mainSourceSet.srcDir {getAdjustedThriftGenDir(project)}
+    mainSourceSet.srcDir {getAdjustedThriftGenDir(project, generateInterfacesTask.language)}
 
     project.plugins.withType(IdeaPlugin) {
       project.ideaModule.doFirst {
@@ -55,7 +55,7 @@ abstract class GeneratingPlugin implements Plugin<Project> {
 
         //If ideaModule runs before the folders created by generateInterfaces exist, it will not add them as a source dir
         //so make them now
-        project.file("${getAdjustedThriftGenDir(project)}").mkdirs()
+        project.file("${getAdjustedThriftGenDir(project, generateInterfacesTask.language)}").mkdirs()
       }
     }
 
@@ -63,14 +63,14 @@ abstract class GeneratingPlugin implements Plugin<Project> {
       project.eclipseClasspath.doFirst {
         //If the eclipse tasks runs before the folders created by generateInterfaces exist, it will not add them as a source dir
         //so make them now
-        project.file("${getAdjustedThriftGenDir(project)}").mkdirs()
+        project.file("${getAdjustedThriftGenDir(project, generateInterfacesTask.language)}").mkdirs()
       }
     }
   }
 
   abstract protected getMainSourceSet(Project project);
   abstract protected Task createGenerateInterfacesTask(Project project);
-  protected String getAdjustedThriftGenDir(Project project) {
+  protected String getAdjustedThriftGenDir(Project project, String language) {
     return project.thriftGenDir;
   }
 }
