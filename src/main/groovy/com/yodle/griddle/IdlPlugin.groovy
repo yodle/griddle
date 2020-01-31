@@ -18,10 +18,8 @@ package com.yodle.griddle
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.artifacts.DependencySet
 import org.gradle.api.artifacts.PublishArtifact
 import org.gradle.api.artifacts.maven.Conf2ScopeMappingContainer
-import org.gradle.api.internal.java.JavaLibrary
 import org.gradle.api.plugins.MavenPlugin
 import org.gradle.api.tasks.bundling.Jar
 
@@ -37,8 +35,8 @@ class IdlPlugin implements Plugin<Project> {
     def idlConfiguration = project.configurations.create(IDL_CONFIGURATION)
     def compiledIdlConfiguration = project.configurations.create(COMPILED_IDL_CONFIGURATION)
 
-    project.configurations.getByName('compile').extendsFrom project.configurations.getByName(COMPILED_IDL_CONFIGURATION)
-    project.configurations.getByName('compile').extendsFrom project.configurations.getByName(IDL_CONFIGURATION)
+    project.configurations.getByName('implementation').extendsFrom project.configurations.getByName(COMPILED_IDL_CONFIGURATION)
+    project.configurations.getByName('implementation').extendsFrom project.configurations.getByName(IDL_CONFIGURATION)
 
     project.ext.set('thriftSrcDir',"${project.getProjectDir().getPath()}/src/main/thrift")
     project.ext.set('thriftGenDir', "${project.getProjectDir().getPath()}/build/gen-src")
@@ -73,19 +71,6 @@ class IdlPlugin implements Plugin<Project> {
       project.conf2ScopeMappings.addMapping(1, compiledIdlConfiguration, Conf2ScopeMappingContainer.COMPILE)
     }
 
-    project.components.add(new IdlJavaLibrary(idlArtifact, idlConfiguration.allDependencies))
-
-  }
-}
-
-class IdlJavaLibrary extends JavaLibrary {
-
-  IdlJavaLibrary(PublishArtifact jarArtifact, DependencySet runtimeDependencies) {
-    super(jarArtifact, runtimeDependencies)
-  }
-
-  @Override
-  String getName() {
-    return IdlPlugin.IDL_CONFIGURATION
+    project.artifacts.add(IDL_CONFIGURATION, idlArtifact)
   }
 }
